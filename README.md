@@ -3,7 +3,7 @@ Docker implementation of iRODS provider using PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0-rc ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider1
+- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider1
 /blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
 
 ### Pull image from dockerhub
@@ -75,17 +75,20 @@ IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
 The **docker exec** can be used to interact with the running iRODS provider. Additionally a user definition of **-u irods** will specify that commands should be run as the **irods** service account assigned as the **rodsadmin** of the deployment.
 
 - Sample **ils**:
+
   ```
   $ docker exec -u irods icat ils
   /tempZone/home/rods:
   ```
 
-- Sample **iadmin lz**
+- Sample **iadmin lz**:
+
   ```
   $ docker exec -u irods icat iadmin lz
   tempZone
   ```
-- Sample **ienv**
+- Sample **ienv**:
+
   ```
   $ docker exec -u irods icat ienv
   irods_version - 4.2.0
@@ -116,6 +119,8 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
   irods_server_control_plane_port - 1248
   irods_client_server_negotiation - request_server_negotiation
   ```
+  **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at run time using the `-h HOST_NAME` syntax.
+  
 **Example 2.** Use a local environment file to pass environment variables into the docke container for the iRODS provider to use during `setup_irods.sh` call.
 ```bash
 $ docker run --env-file sample-provider.env --name icat mjstealey/irods-provider:latest
@@ -197,7 +202,7 @@ On completion a running container named **icat** is spawned with the configurati
 
 PostgreSQL **/mydata**
 ```
-$ sudo ls /home/hydro/mydata/ -1
+$ sudo ls /mydata/ -1
 base
 global
 pg_clog
@@ -235,7 +240,7 @@ rods
 
 iRODS Server config **/myconfig**
 ```
-$ sudo ls /home/hydro/myconfig/ -1
+$ sudo ls /myconfig/ -1
 core.dvm
 core.fnm
 core.re
