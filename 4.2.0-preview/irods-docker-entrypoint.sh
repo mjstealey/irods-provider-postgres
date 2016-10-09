@@ -20,8 +20,8 @@ generate_config() {
     DATABASE_HOSTNAME_OR_IP=$(/sbin/ip -f inet -4 -o addr | grep eth | cut -d '/' -f 1 | rev | cut -d ' ' -f 1 | rev)
     echo "${IRODS_SERVICE_ACCOUNT_NAME}" > ${IRODS_CONFIG_FILE}
     echo "${IRODS_SERVICE_ACCOUNT_GROUP}" >> ${IRODS_CONFIG_FILE}
-    echo "1" >> ${IRODS_CONFIG_FILE} # iRODS server's role
-    echo "2" >> ${IRODS_CONFIG_FILE} # ODBC driver for postgres
+    echo "${IRODS_SERVER_ROLE}" >> ${IRODS_CONFIG_FILE} # 1. provider, 2. consumer
+    echo "${ODBC_DRIVER_FOR_POSTGRES}" >> ${IRODS_CONFIG_FILE} # 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
     echo "${IRODS_DATABASE_SERVER_HOSTNAME}" >> ${IRODS_CONFIG_FILE}
     echo "${IRODS_DATABASE_SERVER_PORT}" >> ${IRODS_CONFIG_FILE}
     echo "${IRODS_DATABASE_NAME}" >> ${IRODS_CONFIG_FILE}
@@ -63,7 +63,6 @@ if [[ "$1" = 'setup_irods.sh' ]]; then
     fi
 
     # Keep container alive
-    echo "### iRODS is now running ###"
     tail -f /dev/null
 else
     set_postgres_params
