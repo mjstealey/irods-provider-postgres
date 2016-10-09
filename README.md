@@ -3,8 +3,7 @@ Docker implementation of iRODS provider using PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider1
-/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
+- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
 
 ### Pull image from dockerhub
 ```bash
