@@ -1,4 +1,4 @@
-# irods-provider
+# irods-provider-postgres
 Docker implementation of iRODS provider using PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
