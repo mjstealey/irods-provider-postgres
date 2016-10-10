@@ -3,17 +3,17 @@ Docker implementation of iRODS provider using PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
+- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
 
 ### Pull image from dockerhub
 ```bash
-docker pull mjstealey/irods-provider:latest
+docker pull mjstealey/irods-provider-postgres:latest
 ```
 ### Usage:
 
 **Example 1.** Deploying with default configuration
 ```bash
-docker run --name icat mjstealey/irods-provider:latest
+docker run --name icat mjstealey/irods-provider-postgres:latest
 ```
 This call can also be daemonized with the **-d** flag, which would most likely be used in an actual environment.
 
@@ -122,7 +122,7 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
   
 **Example 2.** Use a local environment file to pass environment variables into the docke container for the iRODS provider to use during `setup_irods.sh` call.
 ```bash
-$ docker run --env-file sample-provider.env --name icat mjstealey/irods-provider:latest
+$ docker run --env-file sample-provider.env --name icat mjstealey/irods-provider-postgres:latest
 ```
 - Using sample environment file named `sample-provder.env` you can override as many or as few default environment variables as you want (Update as required for your iRODS installation).
 
@@ -184,7 +184,7 @@ $ docker run \
   -v /LOCAL_VAULT:/var/lib/irods/iRODS/Vault \
   -v /LOCAL_CONFIG:/etc/irods \
   --name icat \
-  mjstealey/irods-provider:latest
+  mjstealey/irods-provider-postgres:latest
 ```
 
 Using a local directory named `/mydata` for postgres data, local directory `/myvault` for the iRODS vault data, and `/myconfig` for iRODS server configuration along with our environment configuration in the  **myproider.env** file, we would run this.
@@ -195,7 +195,7 @@ $ docker run \
   -v /myconfig:/etc/irods \
   --env-file myprovider.env \
   --name icat \
-  mjstealey/irods-provider:latest
+  mjstealey/irods-provider-postgres:latest
 ```
 On completion a running container named **icat** is spawned with the configuration as defined in the  **sample-provider.env** file. If we were to look in the local `/mydata`, `myvault`, and `myconfig` directories we would see the following.
 
