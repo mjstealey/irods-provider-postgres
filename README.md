@@ -15,7 +15,7 @@ docker pull mjstealey/irods-provider-postgres:latest
 ```bash
 docker run --name icat mjstealey/irods-provider-postgres:latest
 ```
-This call can also be daemonized with the **-d** flag, which would most likely be used in an actual environment.
+This call can also be daemonized with the **-d** flag (`docker run -d --name icat mjstealey/irods-provider-postgres:latest`) which would most likely be used in an actual environment.
 
 On completion a running container named **icat** is spawned with the following configuration:
 ```
