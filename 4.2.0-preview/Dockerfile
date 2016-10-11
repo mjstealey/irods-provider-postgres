@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     apt-transport-https
 
-# Install iRODS v.4.2.0-rc
+# Install iRODS v.4.2.0-preview
 RUN wget -qO - https://unstable.irods.org/irods-unstable-signing-key.asc | sudo apt-key add - \
     && echo "deb [arch=amd64] https://unstable.irods.org/apt/ trusty main" | \
     sudo tee /etc/apt/sources.list.d/renci-irods-unstable.list \
@@ -60,8 +60,8 @@ ENV IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
 ENV IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
 ENV IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
 
-VOLUME ["/var/lib/irods/iRODS/Vault" "/etc/irods" "/var/lib/postgresql/data"]
 COPY irods-docker-entrypoint.sh /
+VOLUME ["/var/lib/irods/iRODS/Vault" "/etc/irods" "/var/lib/postgresql/data"]
 
 EXPOSE $IRODS_PORT $IRODS_CONTROL_PLANE_PORT $IRODS_PORT_RANGE_BEGIN-$IRODS_PORT_RANGE_END
 ENTRYPOINT ["/irods-docker-entrypoint.sh"]
