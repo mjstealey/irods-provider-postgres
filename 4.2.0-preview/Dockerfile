@@ -6,8 +6,10 @@ RUN groupadd -r irods --gid=998 \
     && useradd -r -g irods -d /var/lib/irods --uid=998 irods \
     && mv /docker-entrypoint.sh /postgres-docker-entrypoint.sh
 
-WORKDIR /
-COPY irods-docker-entrypoint.sh /irods-docker-entrypoint.sh
+# Shenanigans to make dockerhub happy
+COPY . /tmp
+RUN cp /tmp/irods-docker-entrypoint.sh /irods-docker-entrypoint.sh \
+    && rm -rf /tmp/*
 
 # Install gosu
 ENV GOSU_VERSION 1.9
