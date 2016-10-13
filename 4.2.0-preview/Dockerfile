@@ -6,11 +6,6 @@ RUN groupadd -r irods --gid=998 \
     && useradd -r -g irods -d /var/lib/irods --uid=998 irods \
     && mv /docker-entrypoint.sh /postgres-docker-entrypoint.sh
 
-# Shenanigans to make dockerhub happy
-COPY . /tmp
-RUN cp /tmp/irods-docker-entrypoint.sh /irods-docker-entrypoint.sh \
-    && rm -rf /tmp/*
-
 # Install gosu
 ENV GOSU_VERSION 1.9
 RUN set -x \
@@ -64,6 +59,11 @@ ENV IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
 ENV IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
 ENV IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
 ENV IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
+
+# Shenanigans to make dockerhub happy
+COPY . /tmp
+RUN cp /tmp/irods-docker-entrypoint.sh /irods-docker-entrypoint.sh \
+    && rm -rf /tmp/*
 
 VOLUME /var/lib/irods/iRODS/Vault /etc/irods /var/lib/postgresql/data
 
