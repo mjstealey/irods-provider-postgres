@@ -24,7 +24,8 @@ RUN set -x \
 RUN apt-get update && apt-get install -y \
     sudo \
     wget \
-    apt-transport-https
+    apt-transport-https \
+    jq
 
 # Install iRODS v.4.2.0-preview
 RUN wget -qO - https://unstable.irods.org/irods-unstable-signing-key.asc | sudo apt-key add - \
@@ -32,7 +33,8 @@ RUN wget -qO - https://unstable.irods.org/irods-unstable-signing-key.asc | sudo 
     sudo tee /etc/apt/sources.list.d/renci-irods-unstable.list \
     && sudo apt-get update && sudo apt-get install -y \
     irods-server \
-    irods-database-plugin-postgres
+    irods-database-plugin-postgres \
+    irods-rule-engine-plugin-python
 
 # default iRODS env
 ENV IRODS_SERVICE_ACCOUNT_NAME=irods

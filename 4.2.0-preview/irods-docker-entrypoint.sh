@@ -16,6 +16,12 @@ set_postgres_params() {
     fi
 }
 
+plugin_python() {
+jq '.plugin_configuration.rule_engines[1] = .plugin_configuration.rule_engines[0]' /etc/irods/server_config.json > /tmp/temp.json
+jq '.plugin_configuration.rule_engines[0]={} | .plugin_configuration.rule_engines[0].instance_name="irods_rule_engine_plugin-python-instance" | .plugin_configuration.rule_engines[0].plugin_name="irods_rule_engine_plugin-python" | .plugin_configuration.rule_engines[0].plugin_specific_configuration="{}"' /tmp/temp.json > /etc/irods/server_config.json
+rm /tmp/temp.json
+}
+
 generate_config() {
     DATABASE_HOSTNAME_OR_IP=$(/sbin/ip -f inet -4 -o addr | grep eth | cut -d '/' -f 1 | rev | cut -d ' ' -f 1 | rev)
     echo "${IRODS_SERVICE_ACCOUNT_NAME}" > ${IRODS_CONFIG_FILE}
@@ -61,6 +67,11 @@ if [[ "$1" = 'setup_irods.sh' ]]; then
         # TODO: Configure with file
         gosu root python /var/lib/irods/scripts/setup_irods.py < ${IRODS_CONFIG_FILE}
     fi
+
+    # update /etc/irods/server_config.json for irods-rule-engine-plugin-python
+    plugin_python
+    chown irods:irods /etc/irods/server_config.json
+    #cat /etc/irods/server_config.json
 
     # Keep container alive
     tail -f /dev/null
