@@ -3,7 +3,7 @@ Docker implementation of iRODS provider using PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this on production deployments.**
+- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this for production deployments.**
 
 ### Pull image from dockerhub
 ```bash
@@ -13,11 +13,11 @@ docker pull mjstealey/irods-provider-postgres:latest
 
 **Example 1.** Deploying with default configuration
 ```bash
-docker run --name icat mjstealey/irods-provider-postgres:latest
+docker run --name provider mjstealey/irods-provider-postgres:latest
 ```
-This call can also be daemonized with the **-d** flag (`docker run -d --name icat mjstealey/irods-provider-postgres:latest`) which would most likely be used in an actual environment.
+This call can also be daemonized with the **-d** flag (`docker run -d --name provider mjstealey/irods-provider-postgres:latest`) which would most likely be used in an actual environment.
 
-On completion a running container named **icat** is spawned with the following configuration:
+On completion a running container named **provider** is spawned with the following configuration:
 ```
 ...
 -------------------------------------------
@@ -76,20 +76,20 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
 - Sample **ils**:
 
   ```
-  $ docker exec -u irods icat ils
+  $ docker exec -u irods provider ils
   /tempZone/home/rods:
   ```
 
 - Sample **iadmin lz**:
 
   ```
-  $ docker exec -u irods icat iadmin lz
+  $ docker exec -u irods provider iadmin lz
   tempZone
   ```
 - Sample **ienv**:
 
   ```
-  $ docker exec -u irods icat ienv
+  $ docker exec -u irods provider ienv
   irods_version - 4.2.0
   irods_zone_name - tempZone
   irods_host - 82420a60d73f
@@ -118,13 +118,13 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
   irods_server_control_plane_port - 1248
   irods_client_server_negotiation - request_server_negotiation
   ```
-  **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at run time using the `-h HOST_NAME` syntax.
+  **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
   
-**Example 2.** Use a local environment file to pass environment variables into the docke container for the iRODS provider to use during `setup_irods.sh` call.
+**Example 2.** Use a local environment file to pass environment variables into the docker container for the iRODS provider to use during `setup_irods.py` call.
 ```bash
-$ docker run --env-file sample-provider.env --name icat mjstealey/irods-provider-postgres:latest
+$ docker run --env-file sample-provider.env --name provider mjstealey/irods-provider-postgres:latest
 ```
-- Using sample environment file named `sample-provder.env` you can override as many or as few default environment variables as you want (Update as required for your iRODS installation).
+- Using sample environment file named `sample-provider.env` you can override as many or as few default environment variables as you want (Update as required for your iRODS installation).
 
   ```bash
   IRODS_SERVICE_ACCOUNT_NAME=irods
@@ -153,18 +153,18 @@ $ docker run --env-file sample-provider.env --name icat mjstealey/irods-provider
   
 This call can also be daemonized with the **-d** flag, which would most likely be used in an actual environment.
 
-On completion a running container named **icat** is spawned with the same configuration as in the first example.
+On completion, a running container named **provider** is spawned with the same configuration as in the first example.
 
 - Sample **iadmin lr**:
   ```
-  $ docker exec -u irods icat iadmin lr
+  $ docker exec -u irods provider iadmin lr
   bundleResc
   demoResc
   ```
 
 - Sample **iadmin lu**
   ```
-  $ docker exec -u irods icat iadmin lu
+  $ docker exec -u irods provider iadmin lu
   rods#tempZone
   ```
   
@@ -176,28 +176,28 @@ The container exposes two volume mount points for PostgreSQL data and iRODS Vaul
 - iRODS Config data: `/etc/irods`
 - PostgreSQL data: `/var/lib/postgresql/data`
 
-The host can mount local volumes in order to preserve the iRODS installation between runs of the docker container. Say we want to map `/LOCAL_POSTGRES` to `/var/lib/postgresql/data`, `/LOCAL_VAULT` to `/var/lib/irods/iRODS/Vault`, and `/LOCAL_CONFIG` to `/etc/irods`, we would run something like this.
+The host can mount local volumes in order to preserve the iRODS installation between runs of the docker container. Say we want to map `/LOCAL_POSTGRES` to `/var/lib/postgresql/data`, `/LOCAL_VAULT` to `/var/lib/irods/iRODS/Vault`, and `/LOCAL_CONFIG` to `/etc/irods`, we would run something like this:
 
 ```
 $ docker run \
   -v /LOCAL_POSTGRES:/var/lib/postgresql/data \
   -v /LOCAL_VAULT:/var/lib/irods/iRODS/Vault \
   -v /LOCAL_CONFIG:/etc/irods \
-  --name icat \
+  --name provider \
   mjstealey/irods-provider-postgres:latest
 ```
 
-Using a local directory named `/mydata` for postgres data, local directory `/myvault` for the iRODS vault data, and `/myconfig` for iRODS server configuration along with our environment configuration in the  **myproider.env** file, we would run this.
+Using a local directory named `/mydata` for PostgreSQL data, local directory `/myvault` for the iRODS Vault data, and `/myconfig` for iRODS server configuration along with our environment configuration in the  **myprovider.env** file, we would run this:
 ```
 $ docker run \
   -v /mydata:/var/lib/postgresql/data \
   -v /myvault:/var/lib/irods/iRODS/Vault \
   -v /myconfig:/etc/irods \
   --env-file myprovider.env \
-  --name icat \
+  --name provider \
   mjstealey/irods-provider-postgres:latest
 ```
-On completion a running container named **icat** is spawned with the configuration as defined in the  **sample-provider.env** file. If we were to look in the local `/mydata`, `myvault`, and `myconfig` directories we would see the following.
+On completion a running container named **provider** is spawned with the configuration as defined in the  **sample-provider.env** file. If we were to look in the local `/mydata`, `myvault`, and `myconfig` directories we would see the following:
 
 PostgreSQL **/mydata**
 ```
