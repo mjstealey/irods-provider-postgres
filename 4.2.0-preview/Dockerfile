@@ -72,4 +72,4 @@ VOLUME /var/lib/irods/iRODS/Vault /etc/irods /var/lib/postgresql/data
 EXPOSE $IRODS_PORT $IRODS_CONTROL_PLANE_PORT $IRODS_PORT_RANGE_BEGIN-$IRODS_PORT_RANGE_END
 ENTRYPOINT ["/irods-docker-entrypoint.sh"]
 
-CMD ["setup_irods.sh"]
+CMD ["setup_irods.py"]

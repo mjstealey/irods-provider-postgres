@@ -50,7 +50,7 @@ generate_config() {
     echo "${IRODS_VAULT_DIRECTORY}" >> ${IRODS_CONFIG_FILE}
 }
 
-if [[ "$1" = 'setup_irods.sh' ]]; then
+if [[ "$1" = 'setup_irods.py' ]]; then
     # Configure PostgreSQL
     set_postgres_params
     ./postgres-docker-entrypoint.sh postgres &
@@ -60,7 +60,7 @@ if [[ "$1" = 'setup_irods.sh' ]]; then
     generate_config
 
     # Setup iRODS
-    if [[ "$1" = 'setup_irods.sh' ]] && [[ "$#" -eq 1 ]]; then
+    if [[ "$1" = 'setup_irods.py' ]] && [[ "$#" -eq 1 ]]; then
         # Configure with environment variables
         gosu root python /var/lib/irods/scripts/setup_irods.py < ${IRODS_CONFIG_FILE}
     else
@@ -71,7 +71,6 @@ if [[ "$1" = 'setup_irods.sh' ]]; then
     # update /etc/irods/server_config.json for irods-rule-engine-plugin-python
     plugin_python
     chown irods:irods /etc/irods/server_config.json
-    #cat /etc/irods/server_config.json
 
     # Keep container alive
     tail -f /dev/null
