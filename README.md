@@ -1,5 +1,5 @@
 # irods-provider-postgres
-Docker implementation of iRODS provider using PostgreSQL 9.4
+Docker implementation of iRODS Server as catalog service provider w/ PostgreSQL 9.4
 
 ## Supported tags and respective Dockerfile links
 
@@ -15,7 +15,11 @@ docker pull mjstealey/irods-provider-postgres:latest
 ```bash
 docker run --name provider mjstealey/irods-provider-postgres:latest
 ```
-This call can also be daemonized with the **-d** flag (`docker run -d --name provider mjstealey/irods-provider-postgres:latest`) which would most likely be used in an actual environment.
+This call can also be daemonized (additional **-d** flag) which would most likely be used in an actual environment
+
+```
+docker run -d --name provider mjstealey/irods-provider-postgres:latest
+```
 
 On completion a running container named **provider** is spawned with the following configuration:
 ```
