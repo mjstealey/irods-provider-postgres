@@ -5,13 +5,13 @@ Docker implementation of iRODS Server as catalog service provider w/ PostgreSQL 
 
 - 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this for production deployments.**
 
-### Pull image from dockerhub
+## Pull image from dockerhub
 ```bash
 docker pull mjstealey/irods-provider-postgres:latest
 ```
-### Usage:
+## Usage:
 
-**Example 1.** Deploying with default configuration
+### Example 1. Deploying with default configuration
 ```bash
 docker run --name provider mjstealey/irods-provider-postgres:latest
 ```
@@ -124,7 +124,7 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
   ```
   **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
   
-**Example 2.** Use a local environment file to pass environment variables into the docker container for the iRODS provider to use during `setup_irods.py` call.
+### Example 2. Use a local environment file to pass environment variables into the docker container for the iRODS provider to use during `setup_irods.py` call.
 ```bash
 $ docker run --env-file sample-provider.env --name provider mjstealey/irods-provider-postgres:latest
 ```
@@ -172,7 +172,7 @@ On completion, a running container named **provider** is spawned with the same c
   rods#tempZone
   ```
   
-**Example 3.** Sharing host volume with container for persisting database or Vault
+### Example 3. Sharing host volume with container for persisting database or Vault
 
 The container exposes two volume mount points for PostgreSQL data and iRODS Vault data.
 
