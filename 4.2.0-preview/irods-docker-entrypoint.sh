@@ -72,6 +72,9 @@ if [[ "$1" = 'setup_irods.py' ]]; then
     plugin_python
     chown irods:irods /etc/irods/server_config.json
 
+    # add empty core.py
+    gosu irods echo "# core.py - Add your Python code here #" > /etc/irods/core.py
+
     # Keep container alive
     tail -f /dev/null
 else
