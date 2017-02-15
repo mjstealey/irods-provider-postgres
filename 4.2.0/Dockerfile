@@ -1,4 +1,4 @@
-FROM postgres:9.4
+FROM postgres:9.6
 MAINTAINER Michael J. Stealey <michael.j.stealey@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -9,7 +9,7 @@ RUN groupadd -r irods --gid=998 \
     && mv /docker-entrypoint.sh /postgres-docker-entrypoint.sh
 
 # Install gosu
-ENV GOSU_VERSION 1.9
+ENV GOSU_VERSION 1.10
 RUN set -x \
     && apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
     && dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')" \
