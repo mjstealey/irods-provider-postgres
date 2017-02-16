@@ -1,27 +1,26 @@
 # irods-provider-postgres
-Docker implementation of iRODS Server as catalog service provider w/ PostgreSQL 9.4
+Docker implementation of iRODS Server as catalog service provider w/ PostgreSQL 9.6
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0-preview ([4.2.0-preview/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0-preview/Dockerfile)) **This pre-release is for TESTING ONLY - do not use this for production deployments.**
+- 4.2.0, latest ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
 
 ## Pull image from dockerhub
+
 ```bash
 docker pull mjstealey/irods-provider-postgres:latest
 ```
 ## Usage:
 
 ### Example 1. Deploying with default configuration
-```bash
-docker run --name provider mjstealey/irods-provider-postgres:latest
-```
-This call can also be daemonized (additional **-d** flag) which would most likely be used in an actual environment
 
-```
+```bash
 docker run -d --name provider mjstealey/irods-provider-postgres:latest
 ```
+This call has been daemonized (additional **-d** flag) which would most likely be used in an actual environment
 
 On completion a running container named **provider** is spawned with the following configuration:
+
 ```
 ...
 -------------------------------------------
@@ -42,15 +41,10 @@ Control plane port:         1248
 Schema validation base URI: file:///var/lib/irods/configuration_schemas
 iRODS server administrator: rods
 -------------------------------------------
-...
-Success.
-
-+--------------------------------+
-| iRODS is installed and running |
-+--------------------------------+
 ```
 
 Default configuration is based on the default environment variables of the container which are defined as:
+
 ```
 IRODS_SERVICE_ACCOUNT_NAME=irods
 IRODS_SERVICE_ACCOUNT_GROUP=irods
@@ -125,8 +119,9 @@ The **docker exec** can be used to interact with the running iRODS provider. Add
   **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
   
 ### Example 2. Use a local environment file to pass environment variables into the docker container for the iRODS provider to use during `setup_irods.py` call.
+
 ```bash
-$ docker run --env-file sample-provider.env --name provider mjstealey/irods-provider-postgres:latest
+$ docker run -d --env-file sample-provider.env --name provider mjstealey/irods-provider-postgres:latest
 ```
 - Using sample environment file named `sample-provider.env` you can override as many or as few default environment variables as you want (Update as required for your iRODS installation).
 
@@ -154,12 +149,11 @@ $ docker run --env-file sample-provider.env --name provider mjstealey/irods-prov
   IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
   IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
   ```
-  
-This call can also be daemonized with the **-d** flag, which would most likely be used in an actual environment.
 
 On completion, a running container named **provider** is spawned with the same configuration as in the first example.
 
 - Sample **iadmin lr**:
+
   ```
   $ docker exec -u irods provider iadmin lr
   bundleResc
@@ -167,6 +161,7 @@ On completion, a running container named **provider** is spawned with the same c
   ```
 
 - Sample **iadmin lu**
+
   ```
   $ docker exec -u irods provider iadmin lu
   rods#tempZone
@@ -183,7 +178,7 @@ The container exposes two volume mount points for PostgreSQL data and iRODS Vaul
 The host can mount local volumes in order to preserve the iRODS installation between runs of the docker container. Say we want to map `/LOCAL_POSTGRES` to `/var/lib/postgresql/data`, `/LOCAL_VAULT` to `/var/lib/irods/iRODS/Vault`, and `/LOCAL_CONFIG` to `/etc/irods`, we would run something like this:
 
 ```
-$ docker run \
+$ docker run -d \
   -v /LOCAL_POSTGRES:/var/lib/postgresql/data \
   -v /LOCAL_VAULT:/var/lib/irods/iRODS/Vault \
   -v /LOCAL_CONFIG:/etc/irods \
@@ -192,8 +187,9 @@ $ docker run \
 ```
 
 Using a local directory named `/mydata` for PostgreSQL data, local directory `/myvault` for the iRODS Vault data, and `/myconfig` for iRODS server configuration along with our environment configuration in the  **myprovider.env** file, we would run this:
+
 ```
-$ docker run \
+$ docker run -d \
   -v /mydata:/var/lib/postgresql/data \
   -v /myvault:/var/lib/irods/iRODS/Vault \
   -v /myconfig:/etc/irods \
@@ -204,6 +200,7 @@ $ docker run \
 On completion a running container named **provider** is spawned with the configuration as defined in the  **sample-provider.env** file. If we were to look in the local `/mydata`, `myvault`, and `myconfig` directories we would see the following:
 
 PostgreSQL **/mydata**
+
 ```
 $ sudo ls /mydata/ -1
 base
@@ -233,6 +230,7 @@ postmaster.pid
 **NOTE** - sudo is required because the files are owned by the **postgres** user within the container which may not have a corresponding user on the local file system. The **postgres** user has UID=999, GID=999.
 
 iRODS Vault **/myvault**
+
 ```
 $ sudo ls /myvault/
 home
@@ -242,6 +240,7 @@ rods
 **NOTE** - sudo is required because the files are owned by the **irods** user within the container which may not have a corresponding user on the local file system. The **irods** user has UID=998, GID=998.
 
 iRODS Server config **/myconfig**
+
 ```
 $ sudo ls /myconfig/ -1
 core.dvm
