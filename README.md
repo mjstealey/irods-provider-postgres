@@ -1,49 +1,255 @@
 # irods-provider-postgres
-Docker implementation of iRODS Server as catalog service provider w/ PostgreSQL 9.6
+
+iRODS provider in Docker
+
+- v4.2.2 - Debian:stretch based using PostgreSQL 10 (16.04 Xenial iRODS packages)
+- v4.2.1 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
+- v4.2.0 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
 
 ## Supported tags and respective Dockerfile links
 
-- 4.2.0, latest ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
+- 4.2.2, latest ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
+- 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile)) - In progress
+- 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile)) - In progress
 
-## Pull image from dockerhub
+### Pull image from dockerhub
 
 ```bash
-docker pull mjstealey/irods-provider-postgres:latest
+$ docker pull mjstealey/irods-provider-postgres:latest
 ```
+
+### Build locally
+
+```bash
+$ cd irods-provider-postgres/4.2.2
+$ docker build -t irods-4.2.2 .
+$ docker run -d --name provider irods-4.2.2:latest -i run_irods
+```
+
 ## Usage:
 
-### Example 1. Deploying with default configuration
+An entry point script named `irods-docker-entrypoint.sh` that is internal to the container will have the provided arguments passed to it.
+
+Supported arguments are:
+
+- `-h`: show brief help
+- `-i run_irods`: initialize iRODS provider
+- `-x run_irods`: use existing iRODS provider files
+- `-v`: verbose output
+
+The options can be referenced by passing in `-h` as in the following example:
+
+```
+$ docker run --rm mjstealey/irods-provider-postgres:latest -h
+Usage: /irods-docker-entrypoint.sh [-h] [-ix run_irods] [-v] [arguments]
+
+options:
+-h                    show brief help
+-i run_irods          initialize iRODS 4.2.2 provider
+-x run_irods          use existing iRODS 4.2.2 provider files
+-v                    verbose output
+
+Example:
+  $ docker run --rm mjstealey/irods-provider-postgres:4.2.2 -h           # show help
+  $ docker run -d mjstealey/irods-provider-postgres:4.2.2 -i run_irods   # init with default settings
+```
+
+### Example: Simple container deploy
 
 ```bash
-docker run -d --name provider mjstealey/irods-provider-postgres:latest
+$ docker run -d --name provider mjstealey/irods-provider-postgres:latest -i run_irods
 ```
 This call has been daemonized (additional **-d** flag) which would most likely be used in an actual environment
 
-On completion a running container named **provider** is spawned with the following configuration:
+On completion a running container named **provider** is spawned:
 
 ```
-...
--------------------------------------------
-Database Type: postgres
-ODBC Driver:   PostgreSQL Unicode
-Database Host: localhost
-Database Port: 5432
-Database Name: ICAT
-Database User: irods
--------------------------------------------
-...
--------------------------------------------
-Zone name:                  tempZone
-iRODS server port:          1247
-iRODS port range (begin):   20000
-iRODS port range (end):     20199
-Control plane port:         1248
-Schema validation base URI: file:///var/lib/irods/configuration_schemas
-iRODS server administrator: rods
--------------------------------------------
+$ docker ps
+CONTAINER ID        IMAGE                            COMMAND                  CREATED             STATUS              PORTS                                      NAMES
+a2b2133a7910        irods-provider-postgres:latest   "/irods-docker-ent..."   54 seconds ago      Up About a minute   1247-1248/tcp, 5432/tcp, 20000-20199/tcp   provider
 ```
 
 Default configuration is based on the default environment variables of the container which are defined as:
+
+```
+# default iRODS env
+IRODS_SERVICE_ACCOUNT_NAME=irods
+IRODS_SERVICE_ACCOUNT_GROUP=irods
+# 1. provider, 2. consumer
+IRODS_SERVER_ROLE=1
+# 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
+ODBC_DRIVER_FOR_POSTGRES=2
+IRODS_DATABASE_SERVER_HOSTNAME=localhost
+IRODS_DATABASE_SERVER_PORT=5432
+IRODS_DATABASE_NAME=ICAT
+IRODS_DATABASE_USER_NAME=irods
+IRODS_DATABASE_PASSWORD=temppassword
+IRODS_DATABASE_USER_PASSWORD_SALT=tempsalt
+IRODS_ZONE_NAME=tempZone
+IRODS_PORT=1247
+IRODS_PORT_RANGE_BEGIN=20000
+IRODS_PORT_RANGE_END=20199
+IRODS_CONTROL_PLANE_PORT=1248
+IRODS_SCHEMA_VALIDATION=file:///var/lib/irods/configuration_schemas
+IRODS_SERVER_ADMINISTRATOR_USER_NAME=rods
+IRODS_SERVER_ZONE_KEY=TEMPORARY_zone_key
+IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
+IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
+IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
+IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
+# UID / GID settings
+UID_POSTGRES=999
+GID_POSTGRES=999
+UID_IRODS=998
+GID_IRODS=998
+```
+Interaction with the iRODS server can be done with the `docker exec` command. The container has a definition of the `irods` Linux service account that has been associated with the `rods` **rodsadmin** user in iRODS. Interaction would look as follows:
+
+- Sample **ils**:
+
+  ```
+  $ docker exec -u irods provider ils
+  /tempZone/home/rods:
+  ```
+
+- Sample **iadmin lz**:
+
+  ```
+  $ docker exec -u irods provider iadmin lz
+  tempZone
+  ```
+- Sample **ienv**:
+
+	```
+	$ docker exec -u irods provider ienv
+	irods_version - 4.2.2
+	irods_server_control_plane_encryption_algorithm - AES-256-CBC
+	schema_name - irods_environment
+	irods_transfer_buffer_size_for_parallel_transfer_in_megabytes - 4
+	irods_host - a2b2133a7910
+	irods_user_name - rods
+	irods_zone_name - tempZone
+	irods_server_control_plane_encryption_num_hash_rounds - 16
+	irods_maximum_size_for_single_buffer_in_megabytes - 32
+	irods_session_environment_file - /var/lib/irods/.irods/irods_environment.json.0
+	irods_port - 1247
+	irods_default_resource - demoResc
+	irods_home - /tempZone/home/rods
+	irods_encryption_num_hash_rounds - 16
+	irods_match_hash_policy - compatible
+	irods_default_hash_scheme - SHA256
+	irods_client_server_policy - CS_NEG_REFUSE
+	schema_version - v3
+	irods_encryption_salt_size - 8
+	irods_encryption_algorithm - AES-256-CBC
+	irods_environment_file - /var/lib/irods/.irods/irods_environment.json
+	irods_default_number_of_transfer_threads - 4
+	irods_encryption_key_size - 32
+	irods_server_control_plane_port - 1248
+	irods_server_control_plane_key - TEMPORARY__32byte_ctrl_plane_key
+	irods_client_server_negotiation - request_server_negotiation
+	irods_cwd - /tempZone/home/rods
+	```
+
+  **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
+
+### Example: Persisting data between deploys
+
+By sharing volumes from the host to the container, we can persist data between container instances even if the original container definition is removed from the system.
+
+Volumes to mount:
+
+- iRODS home: map to `/var/lib/irods/` on the container
+- iRODS configuration: map to `/etc/irods/` on the container
+- PostgreSQL data: map to `/var/lib/postgresql/data/` on the container
+
+It is also necessary to define a hostname for the container when persisting data as that information is written to the data store on initialization.
+
+1. Create volumes on the host:
+
+	```
+	$ mkdir var_irods  # map to /var/lib/irods/
+	$ mkdir etc_irods  # map to /etc/irods/
+	$ mkdir var_pgdata # map to /var/lib/postgresql/data/
+	```
+
+2. Run the docker container with the `-i` flag for **init**:
+
+	```
+	$ docker run -d --name provider \
+		-h irods-provider \
+		-v $(pwd)/var_irods:/var/lib/irods \
+		-v $(pwd)/etc_irods:/etc/irods \
+		-v $(pwd)/var_pgdata:/var/lib/postgresql/data \
+		mjstealey/irods-provider-postgres:latest \
+		-i run_irods
+	```
+	
+	Note, the host volumes now contain the relevant data to the iRODS deployment
+	
+	```
+	$ ls var_irods
+	VERSION.json          clients               configuration_schemas irodsctl              msiExecCmd_bin        scripts
+	VERSION.json.dist     config                iRODS                 log                   packaging             test
+	
+	$ ls etc_irods
+	core.dvm                        core.re                         hosts_config.json               service_account.config
+	core.fnm                        host_access_control_config.json server_config.json
+	
+	$ ls var_pgdata
+	PG_VERSION           pg_dynshmem          pg_multixact         pg_snapshots         pg_tblspc            postgresql.auto.conf
+	base                 pg_hba.conf          pg_notify            pg_stat              pg_twophase          postgresql.conf
+	global               pg_ident.conf        pg_replslot          pg_stat_tmp          pg_wal               postmaster.opts
+	pg_commit_ts         pg_logical           pg_serial            pg_subtrans          pg_xact              postmaster.pid
+	```
+	
+	Go ahead and `iput` some data and verify it in the catalog.
+	
+	```
+	$ docker exec -u irods provider iput VERSION.json
+	$ docker exec -u irods provider ils -Lr
+	/tempZone/home/rods:
+	  rods              0 demoResc          224 2017-11-09.18:13 & VERSION.json
+	        generic    /var/lib/irods/iRODS/Vault/home/rods/VERSION.json
+	```
+	
+	Note, the physical file can be found at: `$(pwd)/var_irods/iRODS/Vault/home/rods/VERSION.json` of the host
+
+3. Stop and remove the provider container:
+
+	```
+	$ docker stop provider
+	$ docker rm -fv provider
+	```
+	This destroys any host level definitions or default docker volumes related to the provider container and makes it impossible to recover the data from that container if we had not persisted it locally
+
+4. Run a new docker container with the `-x` flag for **use existing**:
+
+	```
+	$ docker run -d --name new-provider \
+		-h irods-provider \
+		-v $(pwd)/var_irods:/var/lib/irods \
+		-v $(pwd)/etc_irods:/etc/irods \
+		-v $(pwd)/var_pgdata:/var/lib/postgresql/data \
+		mjstealey/irods-provider-postgres:latest \
+		-x run_irods
+	```
+	Even though the name of the docker container changed, the shared host volume mounts and defined hostname that the container should use remained the same.
+	
+	Verify that the file put from the previous container has persisted on the new container instance.
+	
+	```
+	$ docker exec -u irods new-provider ils -Lr
+	/tempZone/home/rods:
+	  rods              0 demoResc          224 2017-11-09.18:13 & VERSION.json
+	        generic    /var/lib/irods/iRODS/Vault/home/rods/VERSION.json
+	```
+
+### Example: Using an environment file
+
+The default configuration variables can be overwritten by user defined values and passed to the container's environment by using an environment file.
+
+Example: `sample-provider.env` 
 
 ```
 IRODS_SERVICE_ACCOUNT_NAME=irods
@@ -68,187 +274,30 @@ IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
 IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
 IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
 IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
+UID_POSTGRES=999
+GID_POSTGRES=999
+UID_IRODS=998
+GID_IRODS=998
 ```
-The **docker exec** can be used to interact with the running iRODS provider. Additionally a user definition of **-u irods** will specify that commands should be run as the **irods** service account assigned as the **rodsadmin** of the deployment.
+This can be particularly useful if you want shared volume mounts to be written to the host using a particular `UID` or `GID` value to better integrate with the system.
 
-- Sample **ils**:
+The inclusion of an environment file is made by adding `--env-file=FILENAME` to the `docker run` call.
 
-  ```
-  $ docker exec -u irods provider ils
-  /tempZone/home/rods:
-  ```
-
-- Sample **iadmin lz**:
-
-  ```
-  $ docker exec -u irods provider iadmin lz
-  tempZone
-  ```
-- Sample **ienv**:
-
-  ```
-  $ docker exec -u irods provider ienv
-  irods_version - 4.2.0
-  irods_zone_name - tempZone
-  irods_host - 82420a60d73f
-  irods_transfer_buffer_size_for_parallel_transfer_in_megabytes - 4
-  irods_user_name - rods
-  irods_match_hash_policy - compatible
-  irods_session_environment_file - /var/lib/irods/.irods/irods_environment.json.0
-  irods_port - 1247
-  irods_server_control_plane_encryption_num_hash_rounds - 16
-  irods_default_resource - demoResc
-  irods_home - /tempZone/home/rods
-  irods_encryption_num_hash_rounds - 16
-  irods_encryption_key_size - 32
-  schema_name - irods_environment
-  irods_server_control_plane_encryption_algorithm - AES-256-CBC
-  irods_default_hash_scheme - SHA256
-  irods_cwd - /tempZone/home/rods
-  irods_encryption_algorithm - AES-256-CBC
-  irods_client_server_policy - CS_NEG_REFUSE
-  irods_environment_file - /var/lib/irods/.irods/irods_environment.json
-  irods_default_number_of_transfer_threads - 4
-  irods_maximum_size_for_single_buffer_in_megabytes - 32
-  schema_version - v3
-  irods_encryption_salt_size - 8
-  irods_server_control_plane_key - TEMPORARY__32byte_ctrl_plane_key
-  irods_server_control_plane_port - 1248
-  irods_client_server_negotiation - request_server_negotiation
-  ```
-  **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
-  
-### Example 2. Use a local environment file to pass environment variables into the docker container for the iRODS provider to use during `setup_irods.py` call.
-
-```bash
-$ docker run -d --env-file sample-provider.env --name provider mjstealey/irods-provider-postgres:latest
-```
-- Using sample environment file named `sample-provider.env` you can override as many or as few default environment variables as you want (Update as required for your iRODS installation).
-
-  ```bash
-  IRODS_SERVICE_ACCOUNT_NAME=irods
-  IRODS_SERVICE_ACCOUNT_GROUP=irods
-  IRODS_SERVER_ROLE=1         # iRODS server's role: 1. provider, 2. consumer
-  ODBC_DRIVER_FOR_POSTGRES=2  # ODBC driver for postgres: 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
-  IRODS_DATABASE_SERVER_HOSTNAME=localhost
-  IRODS_DATABASE_SERVER_PORT=5432
-  IRODS_DATABASE_NAME=ICAT
-  IRODS_DATABASE_USER_NAME=irods
-  IRODS_DATABASE_PASSWORD=temppassword
-  IRODS_DATABASE_USER_PASSWORD_SALT=tempsalt
-  IRODS_ZONE_NAME=tempZone
-  IRODS_PORT=1247
-  IRODS_PORT_RANGE_BEGIN=20000
-  IRODS_PORT_RANGE_END=20199
-  IRODS_CONTROL_PLANE_PORT=1248
-  IRODS_SCHEMA_VALIDATION=file:///var/lib/irods/configuration_schemas
-  IRODS_SERVER_ADMINISTRATOR_USER_NAME=rods
-  IRODS_SERVER_ZONE_KEY=TEMPORARY_zone_key
-  IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
-  IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
-  IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
-  IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
-  ```
-
-On completion, a running container named **provider** is spawned with the same configuration as in the first example.
-
-- Sample **iadmin lr**:
-
-  ```
-  $ docker exec -u irods provider iadmin lr
-  bundleResc
-  demoResc
-  ```
-
-- Sample **iadmin lu**
-
-  ```
-  $ docker exec -u irods provider iadmin lu
-  rods#tempZone
-  ```
-  
-### Example 3. Sharing host volume with container for persisting database or Vault
-
-The container exposes two volume mount points for PostgreSQL data and iRODS Vault data.
-
-- iRODS Vault data: `/var/lib/irods/iRODS/Vault`
-- iRODS Config data: `/etc/irods`
-- PostgreSQL data: `/var/lib/postgresql/data`
-
-The host can mount local volumes in order to preserve the iRODS installation between runs of the docker container. Say we want to map `/LOCAL_POSTGRES` to `/var/lib/postgresql/data`, `/LOCAL_VAULT` to `/var/lib/irods/iRODS/Vault`, and `/LOCAL_CONFIG` to `/etc/irods`, we would run something like this:
+Example:
 
 ```
-$ docker run -d \
-  -v /LOCAL_POSTGRES:/var/lib/postgresql/data \
-  -v /LOCAL_VAULT:/var/lib/irods/iRODS/Vault \
-  -v /LOCAL_CONFIG:/etc/irods \
-  --name provider \
-  mjstealey/irods-provider-postgres:latest
+$ docker run -d --name provider \
+	-h irods-provider \
+	--env-file=$(pwd)/sample-provider.env \
+	-v $(pwd)/var_irods:/var/lib/irods \
+	-v $(pwd)/etc_irods:/etc/irods \
+	-v $(pwd)/var_pgdata:/var/lib/postgresql/data \
+	mjstealey/irods-provider-postgres:latest \
+	-i run_irods
 ```
 
-Using a local directory named `/mydata` for PostgreSQL data, local directory `/myvault` for the iRODS Vault data, and `/myconfig` for iRODS server configuration along with our environment configuration in the  **myprovider.env** file, we would run this:
+### Additional information
 
-```
-$ docker run -d \
-  -v /mydata:/var/lib/postgresql/data \
-  -v /myvault:/var/lib/irods/iRODS/Vault \
-  -v /myconfig:/etc/irods \
-  --env-file myprovider.env \
-  --name provider \
-  mjstealey/irods-provider-postgres:latest
-```
-On completion a running container named **provider** is spawned with the configuration as defined in the  **sample-provider.env** file. If we were to look in the local `/mydata`, `myvault`, and `myconfig` directories we would see the following:
+The provided examples all use the `-d` flag to daemonize the docker container. The output that would normally be displayed to `STDOUT` of the container is therefore suppressed.
 
-PostgreSQL **/mydata**
-
-```
-$ sudo ls /mydata/ -1
-base
-global
-pg_clog
-pg_dynshmem
-pg_hba.conf
-pg_ident.conf
-pg_logical
-pg_multixact
-pg_notify
-pg_replslot
-pg_serial
-pg_snapshots
-pg_stat
-pg_stat_tmp
-pg_subtrans
-pg_tblspc
-pg_twophase
-PG_VERSION
-pg_xlog
-postgresql.auto.conf
-postgresql.conf
-postmaster.opts
-postmaster.pid
-```
-**NOTE** - sudo is required because the files are owned by the **postgres** user within the container which may not have a corresponding user on the local file system. The **postgres** user has UID=999, GID=999.
-
-iRODS Vault **/myvault**
-
-```
-$ sudo ls /myvault/
-home
-$ sudo ls /myvault/home
-rods
-```
-**NOTE** - sudo is required because the files are owned by the **irods** user within the container which may not have a corresponding user on the local file system. The **irods** user has UID=998, GID=998.
-
-iRODS Server config **/myconfig**
-
-```
-$ sudo ls /myconfig/ -1
-core.dvm
-core.fnm
-core.re
-host_access_control_config.json
-hosts_config.json
-server_config.json
-service_account.config
-```
-**NOTE** - sudo is required because the files are owned by the **irods** user within the container which may not have a corresponding user on the local file system. The **irods** user has UID=998, GID=998.
+Output example for [iRODS provider v4.2.2](example-output/example-output-4.2.2.md)
