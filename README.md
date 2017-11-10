@@ -6,6 +6,8 @@ iRODS provider in Docker
 - v4.2.1 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
 - v4.2.0 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
 
+Jump to [Real world usage](#real_usage) example
+
 ## Supported tags and respective Dockerfile links
 
 - 4.2.2, latest ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
@@ -295,6 +297,179 @@ $ docker run -d --name provider \
 	mjstealey/irods-provider-postgres:latest \
 	-i run_irods
 ```
+
+### <a name="real_usage"></a> Example: Real world usage
+
+The docker based implementation of iRODS can be used as a standard iRODS catalog provider when being installed on a VM or other platform capable of running docker and has a DNS resolvable name.
+
+In this example we will be using a VM on a private VLAN (not publicly accessible) with:
+
+- Hostname: `mjs-dev-1.edc.renci.org`
+- User: `stealey`
+- UID/GID: `20022`/`10000`
+	- iRODS files to be owned by `20022`/`10000`
+	- PostgreSQL files to be owned by `999`/`10000`
+- Map 
+	- host: `/var/provider/lib_irods` to docker - `/var/lib/irods`
+	- host: `/var/provider/etc_irods` to docker - `/etc/irods`
+	- host: `/var/provider/pg_data` to docker - `/var/lib/postgresql/data`
+
+**Configuration**
+
+Create an environment file that captures the essence of what you want to deploy. In this example this has been named `irods-provider.env`. The file only needs to contain the values that are being changed from the default, but all are shown here for completeness.
+
+Passwords generated using [pwgen](https://sourceforge.net/projects/pwgen/): `$ pwgen -cnB 32 1`
+
+Example: `irods-provider.env` 
+
+```
+IRODS_SERVICE_ACCOUNT_NAME=irods
+IRODS_SERVICE_ACCOUNT_GROUP=irods
+IRODS_SERVER_ROLE=1
+ODBC_DRIVER_FOR_POSTGRES=2
+IRODS_DATABASE_SERVER_HOSTNAME=localhost
+IRODS_DATABASE_SERVER_PORT=5432
+IRODS_DATABASE_NAME=ICAT
+IRODS_DATABASE_USER_NAME=irods
+IRODS_DATABASE_PASSWORD=thooJohkoo4tah9xi3xuehobooNaikoo
+IRODS_DATABASE_USER_PASSWORD_SALT=ifu9ocohteipuchae4eejienoe3bahth
+IRODS_ZONE_NAME=mjsDevZone
+IRODS_PORT=1247
+IRODS_PORT_RANGE_BEGIN=20000
+IRODS_PORT_RANGE_END=20199
+IRODS_CONTROL_PLANE_PORT=1248
+IRODS_SCHEMA_VALIDATION=file:///var/lib/irods/configuration_schemas
+IRODS_SERVER_ADMINISTRATOR_USER_NAME=rods
+IRODS_SERVER_ZONE_KEY=unieg4aing3Ed4Too7choT4ie4Eiceiz
+IRODS_SERVER_NEGOTIATION_KEY=ieb4mahNg7wahiefoo4ahchif9seiC4a
+IRODS_CONTROL_PLANE_KEY=aiNiePhi4queshiacoog3uugai4UhooJ
+IRODS_SERVER_ADMINISTRATOR_PASSWORD=eeThefeig3ahNo9othaequooMo4bohsa
+IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
+UID_POSTGRES=999
+GID_POSTGRES=10000
+UID_IRODS=20022
+GID_IRODS=10000
+```
+Create the directories on the host to share with the provider container and set the permissions to correspond with the UID/GID that will be passed to the container.
+
+```
+$ sudo mkdir -p /var/provider/lib_irods \
+	/var/provider/etc_irods \
+	/var/provider/pg_data
+$ sudo chown -R 20022:10000 /var/provider/lib_irods \
+	/var/provider/etc_irods
+$ sudo chown -R 999:10000 /var/provider/pg_data
+$ sudo ls -alh /var/provider/ ### <-- validate settings
+```
+
+**Deployment**
+
+Because we want this to interact as a normal iRODS provider, we will need to open the necessary ports for it to do so. specifically ports `1247`, `1248` and `20000-20199`.
+
+Run this docker command from the same directory as the `irods-provider.env` file.
+
+```
+$ docker run -d --name provider \
+	-h mjs-dev-1.edc.renci.org \
+	--env-file=irods-provider.env \
+	-v /var/provider/lib_irods:/var/lib/irods \
+	-v /var/provider/etc_irods:/etc/irods \
+	-v /var/provider/pg_data:/var/lib/postgresql/data \
+	-p 1247:1247 \
+	-p 1248:1248 \
+	-p 20000-20199:20000-20199 \
+	mjstealey/irods-provider-postgres:latest \
+	-i run_irods
+```
+
+Since the container is being run with the `-d` flag, progress can be monitored by using docker attach to attach a terminal to the `STDOUT` of the container.
+
+```
+$ docker attach --sig-proxy=false provider
+```
+
+Use `ctl-c` to exit when finished.
+
+Output of docker ps should look something like:
+
+```
+$ docker ps
+CONTAINER ID        IMAGE                                      COMMAND                  CREATED             STATUS              PORTS                                                                              NAMES
+f04993705973        mjstealey/irods-provider-postgres:latest   "/irods-docker-ent..."   27 seconds ago      Up 24 seconds       0.0.0.0:1247-1248->1247-1248/tcp, 0.0.0.0:20000-20199->20000-20199/tcp, 5432/tcp   provider
+```
+
+The container should also identify it's hostname as the same that you are running it on.
+
+```
+$ docker exec provider hostname
+mjs-dev-1.edc.renci.org
+```
+
+**Sample iCommands**
+
+A true test of the system will be to log in from another machine, iinit as the `rods` user from the `mjs-dev-1.edc.renci.org` deployment, and see if iCommands work as they should.
+
+In this example we will be using `galera-1.edc.renci.org` as the other machine that has our iRODS deployment within it's network scope (on the same VLAN).
+
+From `galera-1.edc.renci.org`:
+
+```
+$ iinit
+One or more fields in your iRODS environment file (irods_environment.json) are
+missing; please enter them.
+Enter the host name (DNS) of the server to connect to: mjs-dev-1.edc.renci.org
+Enter the port number: 1247
+Enter your irods user name: rods
+Enter your irods zone: mjsDevZone
+Those values will be added to your environment file (for use by
+other iCommands) if the login succeeds.
+
+Enter your current iRODS password: eeThefeig3ahNo9othaequooMo4bohsa
+
+$ ils
+/mjsDevZone/home/rods:
+
+$ iadmin lr
+bundleResc
+demoResc
+
+$ iadmin lu
+rods#mjsDevZone
+
+$ iadmin lz
+mjsDevZone
+```
+
+Try `iput` from `galera-1.edc.renci.org` using a 10MB test file:
+
+```
+$ dd if=/dev/zero of=test-file.dat  bs=1M  count=10
+10+0 records in
+10+0 records out
+10485760 bytes (10 MB) copied, 0.0109233 s, 960 MB/s
+$ ls -alh test-file.dat
+-rw-r--r-- 1 xxxxx xxxxx 10M Nov 10 13:32 test-file.dat
+
+$ iput test-file.dat
+$ ils -Lr
+/mjsDevZone/home/rods:
+  rods              0 demoResc     10485760 2017-11-10.13:34 & test-file.dat
+        generic    /var/lib/irods/iRODS/Vault/home/rods/test-file.dat
+```
+
+Verify file on disk at `mjs-dev-1.edc.renci.org` in the vault:
+
+```
+$ sudo ls -alh /var/provider/lib_irods/iRODS/Vault/home/rods
+total 10M
+drwxr-x--- 2 xxxxx xxxxx 26 Nov 10 13:34 .
+drwxr-x--- 3 xxxxx xxxxx 17 Nov 10 13:23 ..
+-rw------- 1 xxxxx xxxxx 10M Nov 10 13:34 test-file.dat
+```
+
+All other interactions that one would normally have wtih an iRODS provider should hold true for the Docker implementation.
+
+Since the critical files are persisted to the host, adjustment to files such as `/etc/irods/server_config.json` could instead be done at `/var/provider/etc_irods/server_config.json` so long as the appropriate file access permissions are adhered to.
 
 ### Additional information
 
