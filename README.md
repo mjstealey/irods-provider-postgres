@@ -9,8 +9,8 @@ iRODS provider in Docker
 ## Supported tags and respective Dockerfile links
 
 - 4.2.2, latest ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
-- 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile)) - In progress
-- 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile)) - In progress
+- 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile))
+- 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
 
 ### Pull image from dockerhub
 
@@ -23,7 +23,7 @@ $ docker pull mjstealey/irods-provider-postgres:latest
 ```bash
 $ cd irods-provider-postgres/4.2.2
 $ docker build -t irods-4.2.2 .
-$ docker run -d --name provider irods-4.2.2:latest -i run_irods
+$ docker run -d --name provider irods-4.2.2:latest
 ```
 
 ## Usage:
@@ -57,7 +57,7 @@ Example:
 ### Example: Simple container deploy
 
 ```bash
-$ docker run -d --name provider mjstealey/irods-provider-postgres:latest -i run_irods
+$ docker run -d --name provider mjstealey/irods-provider-postgres:latest
 ```
 This call has been daemonized (additional **-d** flag) which would most likely be used in an actual environment
 
@@ -153,17 +153,17 @@ Interaction with the iRODS server can be done with the `docker exec` command. Th
 
   **NOTE:** The `irods_host` value is set to the ID of the Docker container. This can be specified by the user at runtime using the `-h HOST_NAME` syntax.
 
-### Example: Persisting data between deploys
+### Example: Persisting data
 
-By sharing volumes from the host to the container, we can persist data between container instances even if the original container definition is removed from the system.
+By sharing volumes from the host to the container, the user can persist data between container instances even if the original container definition is removed from the system.
 
 Volumes to mount:
 
-- iRODS home: map to `/var/lib/irods/` on the container
-- iRODS configuration: map to `/etc/irods/` on the container
-- PostgreSQL data: map to `/var/lib/postgresql/data/` on the container
+- **iRODS home**: map to `/var/lib/irods/` on the container
+- **iRODS configuration**: map to `/etc/irods/` on the container
+- **PostgreSQL data**: map to `/var/lib/postgresql/data/` on the container
 
-It is also necessary to define a hostname for the container when persisting data as that information is written to the data store on initialization.
+It is also necessary to define a **hostname** for the container when persisting data as the hostname information is written to the data store on initialization.
 
 1. Create volumes on the host:
 

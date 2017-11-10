@@ -1,4 +1,4 @@
-FROM postgres:10
+FROM postgres:9.6
 MAINTAINER Michael J. Stealey <michael.j.stealey@gmail.com>
 
 # set user/group IDs for irods account
@@ -6,29 +6,26 @@ RUN groupadd -r irods --gid=998 \
     && useradd -r -g irods -d /var/lib/irods --uid=998 irods \
     && mv /docker-entrypoint.sh /postgres-docker-entrypoint.sh
 
-# install iRODS v4.2.2
-RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
-    > /etc/apt/sources.list.d/jessie-backports.list \
-    && apt-get update && apt-get install -y \
+# install iRODS v4.2.0
+RUN apt-get update && apt-get install -y \
     wget \
-    gnupg2 \
     apt-transport-https \
     sudo \
     jq \
     && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
-    && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
+    && echo "deb [arch=amd64] https://packages.irods.org/apt/ trusty main" \
     > /etc/apt/sources.list.d/renci-irods.list \
     && apt-get update && apt-get install -y \
-    irods-database-plugin-postgres=4.2.2 \
+    irods-database-plugin-postgres=4.2.0 \
     irods-externals-avro1.7.7-0 \
     irods-externals-boost1.60.0-0 \
     irods-externals-clang-runtime3.8-0 \
     irods-externals-jansson2.7-0 \
     irods-externals-libarchive3.1.2-0 \
     irods-externals-zeromq4-14.1.3-0 \
-    irods-icommands=4.2.2  \
-    irods-runtime=4.2.2  \
-    irods-server=4.2.2
+    irods-icommands=4.2.0  \
+    irods-runtime=4.2.0  \
+    irods-server=4.2.0
 
 # default iRODS env
 ENV IRODS_SERVICE_ACCOUNT_NAME=irods

@@ -117,13 +117,13 @@ _usage() {
     echo " "
     echo "options:"
     echo "-h                    show brief help"
-    echo "-i run_irods          initialize iRODS 4.2.2 provider"
-    echo "-x run_irods          use existing iRODS 4.2.2 provider files"
+    echo "-i run_irods          initialize iRODS 4.2.1 provider"
+    echo "-x run_irods          use existing iRODS 4.2.1 provider files"
     echo "-v                    verbose output"
     echo ""
     echo "Example:"
-    echo "  $ docker run --rm mjstealey/irods-provider-postgres:4.2.2 -h           # show help"
-    echo "  $ docker run -d mjstealey/irods-provider-postgres:4.2.2 -i run_irods   # init with default settings"
+    echo "  $ docker run --rm mjstealey/irods-provider-postgres:4.2.1 -h           # show help"
+    echo "  $ docker run -d mjstealey/irods-provider-postgres:4.2.1 -i run_irods   # init with default settings"
     echo ""
     exit 0
 }
