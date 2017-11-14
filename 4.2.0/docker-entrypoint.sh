@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-IRODS_CONFIG_FILE=/irods.config
 INIT=false
 EXISTING=false
 USAGE=false
@@ -85,36 +84,36 @@ _irods_tgz() {
 }
 
 _generate_config() {
-    DATABASE_HOSTNAME_OR_IP=$(/sbin/ip -f inet -4 -o addr | grep eth | cut -d '/' -f 1 | rev | cut -d ' ' -f 1 | rev)
-    echo "${IRODS_SERVICE_ACCOUNT_NAME}" > ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVICE_ACCOUNT_GROUP}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVER_ROLE}" >> ${IRODS_CONFIG_FILE} # 1. provider, 2. consumer
-    echo "${ODBC_DRIVER_FOR_POSTGRES}" >> ${IRODS_CONFIG_FILE} # 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
-    echo "${IRODS_DATABASE_SERVER_HOSTNAME}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_DATABASE_SERVER_PORT}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_DATABASE_NAME}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_DATABASE_USER_NAME}" >> ${IRODS_CONFIG_FILE}
-    echo "yes" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_DATABASE_PASSWORD}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_DATABASE_USER_PASSWORD_SALT}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_ZONE_NAME}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_PORT}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_PORT_RANGE_BEGIN}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_PORT_RANGE_END}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_CONTROL_PLANE_PORT}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SCHEMA_VALIDATION}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVER_ADMINISTRATOR_USER_NAME}" >> ${IRODS_CONFIG_FILE}
-    echo "yes" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVER_ZONE_KEY}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVER_NEGOTIATION_KEY}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_CONTROL_PLANE_KEY}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_SERVER_ADMINISTRATOR_PASSWORD}" >> ${IRODS_CONFIG_FILE}
-    echo "${IRODS_VAULT_DIRECTORY}" >> ${IRODS_CONFIG_FILE}
+    local OUTFILE=/irods.config
+    echo "${IRODS_SERVICE_ACCOUNT_NAME}" > $OUTFILE
+    echo "${IRODS_SERVICE_ACCOUNT_GROUP}" >> $OUTFILE
+    echo "${IRODS_SERVER_ROLE}" >> $OUTFILE # 1. provider, 2. consumer
+    echo "${ODBC_DRIVER_FOR_POSTGRES}" >> $OUTFILE # 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
+    echo "${IRODS_DATABASE_SERVER_HOSTNAME}" >> $OUTFILE
+    echo "${IRODS_DATABASE_SERVER_PORT}" >> $OUTFILE
+    echo "${IRODS_DATABASE_NAME}" >> $OUTFILE
+    echo "${IRODS_DATABASE_USER_NAME}" >> $OUTFILE
+    echo "yes" >> $OUTFILE
+    echo "${IRODS_DATABASE_PASSWORD}" >> $OUTFILE
+    echo "${IRODS_DATABASE_USER_PASSWORD_SALT}" >> $OUTFILE
+    echo "${IRODS_ZONE_NAME}" >> $OUTFILE
+    echo "${IRODS_PORT}" >> $OUTFILE
+    echo "${IRODS_PORT_RANGE_BEGIN}" >> $OUTFILE
+    echo "${IRODS_PORT_RANGE_END}" >> $OUTFILE
+    echo "${IRODS_CONTROL_PLANE_PORT}" >> $OUTFILE
+    echo "${IRODS_SCHEMA_VALIDATION}" >> $OUTFILE
+    echo "${IRODS_SERVER_ADMINISTRATOR_USER_NAME}" >> $OUTFILE
+    echo "yes" >> $OUTFILE
+    echo "${IRODS_SERVER_ZONE_KEY}" >> $OUTFILE
+    echo "${IRODS_SERVER_NEGOTIATION_KEY}" >> $OUTFILE
+    echo "${IRODS_CONTROL_PLANE_KEY}" >> $OUTFILE
+    echo "${IRODS_SERVER_ADMINISTRATOR_PASSWORD}" >> $OUTFILE
+    echo "${IRODS_VAULT_DIRECTORY}" >> $OUTFILE
 }
 
 _usage() {
     echo "Usage: ${0} [-h] [-ix run_irods] [-v] [arguments]"
-    echo " "
+    echo ""
     echo "options:"
     echo "-h                    show brief help"
     echo "-i run_irods          initialize iRODS 4.2.0 provider"
@@ -162,7 +161,7 @@ if $RUN_IRODS; then
         done
         sleep 2s
         _generate_config
-        gosu root python /var/lib/irods/scripts/setup_irods.py < ${IRODS_CONFIG_FILE}
+        gosu root python /var/lib/irods/scripts/setup_irods.py < /irods.config
         _update_uid_gid
         if $VERBOSE; then
             echo "INFO: show ienv"
