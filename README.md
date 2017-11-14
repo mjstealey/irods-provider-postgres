@@ -2,9 +2,13 @@
 
 iRODS provider in Docker
 
-- v4.2.2 - Debian:stretch based using PostgreSQL 10 (16.04 Xenial iRODS packages)
-- v4.2.1 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
-- v4.2.0 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
+- 4.2.2 - Debian:stretch based using PostgreSQL 10 (16.04 Xenial iRODS packages)
+- 4.2.1 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
+- 4.2.0 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
+- 4.1.11 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
+- 4.1.10 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
+- 4.1.9 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
+- 4.1.8 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
 
 Jump to [Real world usage](#real_usage) example
 
@@ -13,6 +17,10 @@ Jump to [Real world usage](#real_usage) example
 - 4.2.2, latest ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
 - 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile))
 - 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
+- 4.1.11 ([4.1.11/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.11/Dockerfile))
+- 4.1.10 ([4.1.10/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.10/Dockerfile))
+- 4.1.9 ([4.1.9/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.9/Dockerfile))
+- 4.1.8 ([4.1.8/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.8/Dockerfile))
 
 ### Pull image from dockerhub
 
@@ -105,6 +113,10 @@ GID_POSTGRES=999
 UID_IRODS=998
 GID_IRODS=998
 ```
+
+- **Note**: For iRODS 4.1.x there is no need to specify `IRODS_SERVER_ROLE`, `ODBC_DRIVER_FOR_POSTGRES` or `IRODS_DATABASE_USER_PASSWORD_SALT`. If specified the values will be ignored as they are not used by the 4.1.x setup scripts.
+
+
 Interaction with the iRODS server can be done with the `docker exec` command. The container has a definition of the `irods` Linux service account that has been associated with the `rods` **rodsadmin** user in iRODS. Interaction would look as follows:
 
 - Sample **ils**:
@@ -281,6 +293,9 @@ GID_POSTGRES=999
 UID_IRODS=998
 GID_IRODS=998
 ```
+
+- **Note**: For iRODS 4.1.x there is no need to specify `IRODS_SERVER_ROLE`, `ODBC_DRIVER_FOR_POSTGRES` or `IRODS_DATABASE_USER_PASSWORD_SALT`. If specified the values will be ignored as they are not used by the 4.1.x setup scripts.
+
 This can be particularly useful if you want shared volume mounts to be written to the host using a particular `UID` or `GID` value to better integrate with the system.
 
 The inclusion of an environment file is made by adding `--env-file=FILENAME` to the `docker run` call.

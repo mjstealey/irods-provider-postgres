@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+IRODS_CONFIG_FILE=/irods.config
 INIT=false
 EXISTING=false
 USAGE=false
@@ -87,28 +88,25 @@ _generate_config() {
     local OUTFILE=/irods.config
     echo "${IRODS_SERVICE_ACCOUNT_NAME}" > $OUTFILE
     echo "${IRODS_SERVICE_ACCOUNT_GROUP}" >> $OUTFILE
-    echo "${IRODS_SERVER_ROLE}" >> $OUTFILE # 1. provider, 2. consumer
-    echo "${ODBC_DRIVER_FOR_POSTGRES}" >> $OUTFILE # 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
-    echo "${IRODS_DATABASE_SERVER_HOSTNAME}" >> $OUTFILE
-    echo "${IRODS_DATABASE_SERVER_PORT}" >> $OUTFILE
-    echo "${IRODS_DATABASE_NAME}" >> $OUTFILE
-    echo "${IRODS_DATABASE_USER_NAME}" >> $OUTFILE
-    echo "yes" >> $OUTFILE
-    echo "${IRODS_DATABASE_PASSWORD}" >> $OUTFILE
-    echo "${IRODS_DATABASE_USER_PASSWORD_SALT}" >> $OUTFILE
     echo "${IRODS_ZONE_NAME}" >> $OUTFILE
     echo "${IRODS_PORT}" >> $OUTFILE
     echo "${IRODS_PORT_RANGE_BEGIN}" >> $OUTFILE
     echo "${IRODS_PORT_RANGE_END}" >> $OUTFILE
-    echo "${IRODS_CONTROL_PLANE_PORT}" >> $OUTFILE
-    echo "${IRODS_SCHEMA_VALIDATION}" >> $OUTFILE
-    echo "${IRODS_SERVER_ADMINISTRATOR_USER_NAME}" >> $OUTFILE
-    echo "yes" >> $OUTFILE
+    echo "${IRODS_VAULT_DIRECTORY}" >> $OUTFILE
     echo "${IRODS_SERVER_ZONE_KEY}" >> $OUTFILE
     echo "${IRODS_SERVER_NEGOTIATION_KEY}" >> $OUTFILE
+    echo "${IRODS_CONTROL_PLANE_PORT}" >> $OUTFILE
     echo "${IRODS_CONTROL_PLANE_KEY}" >> $OUTFILE
+    echo "${IRODS_SCHEMA_VALIDATION}" >> $OUTFILE
+    echo "${IRODS_SERVER_ADMINISTRATOR_USER_NAME}" >> $OUTFILE
     echo "${IRODS_SERVER_ADMINISTRATOR_PASSWORD}" >> $OUTFILE
-    echo "${IRODS_VAULT_DIRECTORY}" >> $OUTFILE
+    echo "yes" >> $OUTFILE
+    echo "${IRODS_DATABASE_SERVER_HOSTNAME}" >> $OUTFILE
+    echo "${IRODS_DATABASE_SERVER_PORT}" >> $OUTFILE
+    echo "${IRODS_DATABASE_NAME}" >> $OUTFILE
+    echo "${IRODS_DATABASE_USER_NAME}" >> $OUTFILE
+    echo "${IRODS_DATABASE_PASSWORD}" >> $OUTFILE
+    echo "yes" >> $OUTFILE
 }
 
 _usage() {
@@ -116,13 +114,13 @@ _usage() {
     echo " "
     echo "options:"
     echo "-h                    show brief help"
-    echo "-i run_irods          initialize iRODS 4.2.1 provider"
-    echo "-x run_irods          use existing iRODS 4.2.1 provider files"
+    echo "-i run_irods          initialize iRODS 4.1.10 provider"
+    echo "-x run_irods          use existing iRODS 4.1.10 provider files"
     echo "-v                    verbose output"
     echo ""
     echo "Example:"
-    echo "  $ docker run --rm mjstealey/irods-provider-postgres:4.2.1 -h           # show help"
-    echo "  $ docker run -d mjstealey/irods-provider-postgres:4.2.1 -i run_irods   # init with default settings"
+    echo "  $ docker run --rm mjstealey/irods-provider-postgres:4.1.10 -h           # show help"
+    echo "  $ docker run -d mjstealey/irods-provider-postgres:4.1.10 -i run_irods   # init with default settings"
     echo ""
     exit 0
 }
@@ -161,7 +159,7 @@ if $RUN_IRODS; then
         done
         sleep 2s
         _generate_config
-        gosu root python /var/lib/irods/scripts/setup_irods.py < /irods.config
+        gosu root /var/lib/irods/packaging/setup_irods.sh < /irods.config
         _update_uid_gid
         if $VERBOSE; then
             echo "INFO: show ienv"
