@@ -177,6 +177,10 @@ Volumes to mount:
 - **iRODS configuration**: map to `/etc/irods/` on the container
 - **PostgreSQL data**: map to `/var/lib/postgresql/data/` on the container
 
+SE Linux users should note that volume mounts may fail, and may require a `:z` or `:Z` at the end of their volume defintion.
+
+- `-v $(pwd)/var_irods:/var/lib/irods:z`
+
 It is also necessary to define a **hostname** for the container when persisting data as the hostname information is written to the data store on initialization.
 
 1. Create volumes on the host:
