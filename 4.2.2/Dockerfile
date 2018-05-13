@@ -8,27 +8,53 @@ RUN groupadd -r irods --gid=998 \
 
 # install iRODS v4.2.2
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
-    > /etc/apt/sources.list.d/jessie-backports.list \
-    && apt-get update && apt-get install -y \
-    wget \
-    gnupg2 \
-    apt-transport-https \
-    sudo \
-    jq \
-    && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
-    && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
-    > /etc/apt/sources.list.d/renci-irods.list \
-    && apt-get update && apt-get install -y \
-    irods-database-plugin-postgres=4.2.2 \
-    irods-externals-avro1.7.7-0 \
-    irods-externals-boost1.60.0-0 \
-    irods-externals-clang-runtime3.8-0 \
-    irods-externals-jansson2.7-0 \
-    irods-externals-libarchive3.1.2-0 \
-    irods-externals-zeromq4-14.1.3-0 \
-    irods-icommands=4.2.2  \
-    irods-runtime=4.2.2  \
-    irods-server=4.2.2
+  > /etc/apt/sources.list.d/jessie-backports.list \
+  && apt-get update && apt-get install -y \
+  wget \
+  gnupg2 \
+  apt-transport-https \
+  sudo \
+  jq \
+  libxml2 \
+  moreutils \
+  postgresql-client \
+  && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
+  && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
+  > /etc/apt/sources.list.d/renci-irods.list \
+  && apt-get update && apt-get install -y \
+  irods-database-plugin-postgres=4.2.2 \
+  irods-externals-avro1.7.7-0 \
+  irods-externals-boost1.60.0-0 \
+  irods-externals-clang-runtime3.8-0 \
+  irods-externals-jansson2.7-0 \
+  irods-externals-libarchive3.1.2-0 \
+  irods-externals-zeromq4-14.1.3-0 \
+  irods-icommands=4.2.2  \
+  irods-runtime=4.2.2  \
+  irods-server=4.2.2
+
+# RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
+#     > /etc/apt/sources.list.d/jessie-backports.list \
+#     && apt-get update && apt-get install -y \
+#     wget \
+#     gnupg2 \
+#     apt-transport-https \
+#     sudo \
+#     jq \
+#     && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
+#     && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
+#     > /etc/apt/sources.list.d/renci-irods.list \
+#     && apt-get update && apt-get install -y \
+#     irods-database-plugin-postgres=4.2.2 \
+#     irods-externals-avro1.7.7-0 \
+#     irods-externals-boost1.60.0-0 \
+#     irods-externals-clang-runtime3.8-0 \
+#     irods-externals-jansson2.7-0 \
+#     irods-externals-libarchive3.1.2-0 \
+#     irods-externals-zeromq4-14.1.3-0 \
+#     irods-icommands=4.2.2  \
+#     irods-runtime=4.2.2  \
+#     irods-server=4.2.2
 
 # default iRODS env
 ENV IRODS_SERVICE_ACCOUNT_NAME=irods
@@ -60,6 +86,8 @@ ENV UID_POSTGRES=999
 ENV GID_POSTGRES=999
 ENV UID_IRODS=998
 ENV GID_IRODS=998
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=postgres
 
 # create postgresql.tar.gz
 RUN cd /var/lib/postgresql/data \
@@ -75,7 +103,6 @@ COPY ./docker-entrypoint.sh /irods-docker-entrypoint.sh
 VOLUME /var/lib/irods /etc/irods /var/lib/postgresql/data
 
 EXPOSE $IRODS_PORT $IRODS_CONTROL_PLANE_PORT $IRODS_PORT_RANGE_BEGIN-$IRODS_PORT_RANGE_END
-ENTRYPOINT ["/irods-docker-entrypoint.sh"]
-WORKDIR "/var/lib/irods"
 
-CMD ["-i", "run_irods"]
+WORKDIR /var/lib/irods/
+ENTRYPOINT ["/irods-docker-entrypoint.sh"]
