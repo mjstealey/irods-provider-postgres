@@ -574,9 +574,9 @@ Output example for [iRODS provider v4.2.2](example-output/example-output-4.2.2.m
 
 ### iRODS provider in Docker notes
 
-- 4.2.2 - Debian:stretch based using PostgreSQL 10 (16.04 Xenial iRODS packages)
-- 4.2.1 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
-- 4.2.0 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS packages)
+- 4.2.2 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (16.04 Xenial iRODS packages)
+- 4.2.1 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS packages)
+- 4.2.0 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS packages)
 - 4.1.11 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
 - 4.1.10 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
 - 4.1.9 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)

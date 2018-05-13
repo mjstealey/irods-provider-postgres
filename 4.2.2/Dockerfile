@@ -17,77 +17,44 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
   jq \
   libxml2 \
   moreutils \
-  postgresql-client \
   && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
   && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
   > /etc/apt/sources.list.d/renci-irods.list \
   && apt-get update && apt-get install -y \
   irods-database-plugin-postgres=4.2.2 \
-  irods-externals-avro1.7.7-0 \
-  irods-externals-boost1.60.0-0 \
-  irods-externals-clang-runtime3.8-0 \
-  irods-externals-jansson2.7-0 \
-  irods-externals-libarchive3.1.2-0 \
-  irods-externals-zeromq4-14.1.3-0 \
   irods-icommands=4.2.2  \
   irods-runtime=4.2.2  \
   irods-server=4.2.2
 
-# RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
-#     > /etc/apt/sources.list.d/jessie-backports.list \
-#     && apt-get update && apt-get install -y \
-#     wget \
-#     gnupg2 \
-#     apt-transport-https \
-#     sudo \
-#     jq \
-#     && wget -qO - https://packages.irods.org/irods-signing-key.asc | apt-key add - \
-#     && echo "deb [arch=amd64] https://packages.irods.org/apt/ xenial main" \
-#     > /etc/apt/sources.list.d/renci-irods.list \
-#     && apt-get update && apt-get install -y \
-#     irods-database-plugin-postgres=4.2.2 \
-#     irods-externals-avro1.7.7-0 \
-#     irods-externals-boost1.60.0-0 \
-#     irods-externals-clang-runtime3.8-0 \
-#     irods-externals-jansson2.7-0 \
-#     irods-externals-libarchive3.1.2-0 \
-#     irods-externals-zeromq4-14.1.3-0 \
-#     irods-icommands=4.2.2  \
-#     irods-runtime=4.2.2  \
-#     irods-server=4.2.2
-
-# default iRODS env
-ENV IRODS_SERVICE_ACCOUNT_NAME=irods
-ENV IRODS_SERVICE_ACCOUNT_GROUP=irods
-# 1. provider, 2. consumer
-ENV IRODS_SERVER_ROLE=1
-# 1. PostgreSQL ANSI, 2. PostgreSQL Unicode
-ENV ODBC_DRIVER_FOR_POSTGRES=2
-ENV IRODS_DATABASE_SERVER_HOSTNAME=localhost
-ENV IRODS_DATABASE_SERVER_PORT=5432
-ENV IRODS_DATABASE_NAME=ICAT
-ENV IRODS_DATABASE_USER_NAME=irods
-ENV IRODS_DATABASE_PASSWORD=temppassword
-ENV IRODS_DATABASE_USER_PASSWORD_SALT=tempsalt
-ENV IRODS_ZONE_NAME=tempZone
-ENV IRODS_PORT=1247
-ENV IRODS_PORT_RANGE_BEGIN=20000
-ENV IRODS_PORT_RANGE_END=20199
-ENV IRODS_CONTROL_PLANE_PORT=1248
-ENV IRODS_SCHEMA_VALIDATION=file:///var/lib/irods/configuration_schemas
-ENV IRODS_SERVER_ADMINISTRATOR_USER_NAME=rods
-ENV IRODS_SERVER_ZONE_KEY=TEMPORARY_zone_key
-ENV IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key
-ENV IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key
-ENV IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods
-ENV IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault
-# UID / GID settings
-ENV UID_POSTGRES=999
-ENV GID_POSTGRES=999
-ENV UID_IRODS=998
-ENV GID_IRODS=998
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=postgres
+# default iRODS and PostgreSQL environment variables
+ENV IRODS_SERVICE_ACCOUNT_NAME=irods \
+  IRODS_SERVICE_ACCOUNT_GROUP=irods \
+  IRODS_SERVER_ROLE=1 \
+  ODBC_DRIVER_FOR_POSTGRES=2 \
+  IRODS_DATABASE_SERVER_HOSTNAME=localhost \
+  IRODS_DATABASE_SERVER_PORT=5432 \
+  IRODS_DATABASE_NAME=ICAT \
+  IRODS_DATABASE_USER_NAME=irods \
+  IRODS_DATABASE_PASSWORD=temppassword \
+  IRODS_DATABASE_USER_PASSWORD_SALT=tempsalt \
+  IRODS_ZONE_NAME=tempZone \
+  IRODS_PORT=1247 \
+  IRODS_PORT_RANGE_BEGIN=20000 \
+  IRODS_PORT_RANGE_END=20199 \
+  IRODS_CONTROL_PLANE_PORT=1248 \
+  IRODS_SCHEMA_VALIDATION=file:///var/lib/irods/configuration_schemas \
+  IRODS_SERVER_ADMINISTRATOR_USER_NAME=rods \
+  IRODS_SERVER_ZONE_KEY=TEMPORARY_zone_key \
+  IRODS_SERVER_NEGOTIATION_KEY=TEMPORARY_32byte_negotiation_key \
+  IRODS_CONTROL_PLANE_KEY=TEMPORARY__32byte_ctrl_plane_key \
+  IRODS_SERVER_ADMINISTRATOR_PASSWORD=rods \
+  IRODS_VAULT_DIRECTORY=/var/lib/irods/iRODS/Vault \
+  UID_POSTGRES=999 \
+  GID_POSTGRES=999 \
+  UID_IRODS=998 \
+  GID_IRODS=998 \
+  POSTGRES_USER=postgres \
+  POSTGRES_PASSWORD=postgres
 
 # create postgresql.tar.gz
 RUN cd /var/lib/postgresql/data \
