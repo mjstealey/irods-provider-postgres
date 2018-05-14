@@ -38,9 +38,9 @@ _update_uid_gid() {
 ### initialize ICAT database
 _database_setup() {
   cat > /init_icat.sql <<EOF
-CREATE USER irods WITH PASSWORD '${IRODS_DATABASE_PASSWORD}';
+CREATE USER ${IRODS_DATABASE_USER_NAME} WITH PASSWORD '${IRODS_DATABASE_PASSWORD}';
 CREATE DATABASE "${IRODS_DATABASE_NAME}";
-GRANT ALL PRIVILEGES ON DATABASE "${IRODS_DATABASE_NAME}" TO irods;
+GRANT ALL PRIVILEGES ON DATABASE "${IRODS_DATABASE_NAME}" TO ${IRODS_DATABASE_USER_NAME};
 EOF
   cat /init_icat.sql
   PGPASSWORD=${POSTGRES_PASSWORD} psql -U ${POSTGRES_USER} -h \
@@ -111,7 +111,7 @@ _hostname_update() {
       /etc/irods/server_config.json|sponge \
       /etc/irods/server_config.json
     echo "UPDATE r_resc_main SET resc_net = '"$(hostname)"' WHERE resc_net = '${EXPECTED_HOSTNAME}';" > update_hostname.sql
-    su irods PGPASSWORD=temppassword -c 'psql -d ICAT -U irods -a -f update_hostname.sql'
+    su irods PGPASSWORD=temppassword -c 'psql -d ICAT -U '${IRODS_DATABASE_USER_NAME}' -a -f update_hostname.sql'
   fi
 }
 

@@ -39,7 +39,7 @@ cd irods-provider-postgres/4.2.2
 docker build -t irods-provider-postgres .
 ```
 
-## Start an iRODS Provider instance
+## Run the iRODS Provider
 
 ```
 docker run -d --name provider mjstealey/irods-provider-postgres:4.2.2
@@ -47,9 +47,9 @@ docker run -d --name provider mjstealey/irods-provider-postgres:4.2.2
 
 - **Note**: This image is based from the [PostgreSQL Docker definition files](https://hub.docker.com/_/postgres/) which includes `EXPOSE 5432` (the postgres port), so standard container linking will make it automatically available to the linked containers. The default postgres user and database are created in the entrypoint with `initdb`.
 
-## Connect and run iCommands
+## Running iCommands
 
-Since iRODS is running inside of a Docker container, we need to issue icommands from within the container's scope. This can be accomplished by either getting on the container as the `irods` user, or invoked from the host.
+Since iRODS is running inside of a Docker container, we need to issue iCommands from within the container's scope. This can be accomplished by either getting on the container as the `irods` user, or invoked from the host.
 
 ### On the container
 
@@ -120,11 +120,11 @@ Service account name - The account that will be in charge of running iRODS servi
 
 Service account group - The group that will be in charge of running iRODS services. Default is `irods`.
 
-### `IRODS_SERVER_ROLE`
+### `IRODS_SERVER_ROLE` (version 4.2.0+)
 
 Catalog service role - The role of the node being deploy where `1` denotes an iRODS provider and `2` denotes an iRODS consumer. Default is `1`
 
-### `ODBC_DRIVER_FOR_POSTGRES` 
+### `ODBC_DRIVER_FOR_POSTGRES` (version 4.2.0+)
 
 ODBC driver - For PostgreSQL where `1` is **PostgreSQL ANSI** and `2` is **PostgreSQL Unicode**. Default is `2`.
 
@@ -148,7 +148,7 @@ Database user - User that has owner rights on the iRODS catalog database in Post
 
 Database password - Password for the user that has owner rights on the iRODS catalog database in PostgreSQL. Default is `temppassword`
 
-### `IRODS_DATABASE_USER_PASSWORD_SALT` 
+### `IRODS_DATABASE_USER_PASSWORD_SALT` (version 4.2.0+)
 
 Stored passwords salt - Random data that is used as an additional input to a one-way function that "hashes" data, a password or passphrase. Salts are closely related to the concept of nonce. Default is `tempsalt`
 
@@ -577,8 +577,8 @@ Output example for [iRODS provider v4.2.2](example-output/example-output-4.2.2.m
 - 4.2.2 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (16.04 Xenial iRODS packages)
 - 4.2.1 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS packages)
 - 4.2.0 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS packages)
-- 4.1.11 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
-- 4.1.10 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
-- 4.1.9 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
-- 4.1.8 - Debian:jessie based using PostgreSQL 9.6 (14.04 Trusty iRODS ftp deb files)
+- 4.1.11 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
+- 4.1.10 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
+- 4.1.9 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
+- 4.1.8 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
 

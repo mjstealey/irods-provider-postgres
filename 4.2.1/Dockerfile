@@ -1,12 +1,14 @@
 FROM postgres:10
 MAINTAINER Michael J. Stealey <michael.j.stealey@gmail.com>
 
+ENV IRODS_VERSION=4.2.1
+
 # set user/group IDs for irods account
 RUN groupadd -r irods --gid=998 \
     && useradd -r -g irods -d /var/lib/irods --uid=998 irods \
     && mv /docker-entrypoint.sh /postgres-docker-entrypoint.sh
 
-# install iRODS v4.2.1
+# install iRODS 4.2.1
 RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
   > /etc/apt/sources.list.d/jessie-backports.list \
   && apt-get update && apt-get install -y \
@@ -21,10 +23,10 @@ RUN echo "deb http://ftp.debian.org/debian jessie-backports main" \
   && echo "deb [arch=amd64] https://packages.irods.org/apt/ trusty main" \
   > /etc/apt/sources.list.d/renci-irods.list \
   && apt-get update && apt-get install -y \
-  irods-database-plugin-postgres=4.2.1 \
-  irods-icommands=4.2.1  \
-  irods-runtime=4.2.1  \
-  irods-server=4.2.1
+  irods-database-plugin-postgres=${IRODS_VERSION} \
+  irods-icommands=${IRODS_VERSION}  \
+  irods-runtime=${IRODS_VERSION}  \
+  irods-server=${IRODS_VERSION}
 
 # default iRODS and PostgreSQL environment variables
 ENV IRODS_SERVICE_ACCOUNT_NAME=irods \
