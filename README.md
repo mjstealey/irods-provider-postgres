@@ -16,7 +16,8 @@ For more details refer to the [official iRODS documentation](https://docs.irods.
 
 The following tags are supported at: [https://hub.docker.com/r/mjstealey/irods-provider-postgres/](https://hub.docker.com/r/mjstealey/irods-provider-postgres/)
 
-- 4.2.2, latest ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
+- 4.2.3, latest ([4.2.3/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.3/Dockerfile))
+- 4.2.2 ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
 - 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile))
 - 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
 - 4.1.11 ([4.1.11/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.11/Dockerfile))
