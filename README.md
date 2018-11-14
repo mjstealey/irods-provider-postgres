@@ -2,28 +2,30 @@
 
 ## What is iRODS?
 
-The Integrated Rule-Oriented Data System (iRODS) is open source data management software used by research organizations and government agencies worldwide. 
+The Integrated Rule-Oriented Data System (iRODS) is open source data management software used by research organizations and government agencies worldwide.
 
-iRODS is released as a production-level distribution aimed at deployment in mission critical environments. It virtualizes data storage resources, so users can take control of their data, regardless of where and on what device the data is stored. 
+iRODS is released as a production-level distribution aimed at deployment in mission critical environments. It virtualizes data storage resources, so users can take control of their data, regardless of where and on what device the data is stored.
 
-The development infrastructure supports exhaustive testing on supported platforms. 
+The development infrastructure supports exhaustive testing on supported platforms.
 
 The plugin architecture supports microservices, storage systems, authentication, networking, databases, rule engines, and an extensible API.
 
-For more details refer to the [official iRODS documentation](https://docs.irods.org/4.2.2).
+For more details refer to the [official iRODS documentation](https://docs.irods.org/4.2.4).
 
 ## Supported tags and respective Dockerfile links
 
 The following tags are supported at: [https://hub.docker.com/r/mjstealey/irods-provider-postgres/](https://hub.docker.com/r/mjstealey/irods-provider-postgres/)
 
-- 4.2.3, latest ([4.2.3/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.3/Dockerfile))
-- 4.2.2 ([4.2.2/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.2/Dockerfile))
-- 4.2.1 ([4.2.1/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.1/Dockerfile))
-- 4.2.0 ([4.2.0/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.2.0/Dockerfile))
-- 4.1.11 ([4.1.11/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.11/Dockerfile))
-- 4.1.10 ([4.1.10/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.10/Dockerfile))
-- 4.1.9 ([4.1.9/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.9/Dockerfile))
-- 4.1.8 ([4.1.8/Dockerfile](https://github.com/mjstealey/irods-provider-postgres/blob/master/4.1.8/Dockerfile))
+- 4.2.4, latest ([4.2.4/Dockerfile](4.2.4/Dockerfile))
+- 4.2.3 ([4.2.3/Dockerfile](4.2.3/Dockerfile))
+- 4.2.2 ([4.2.2/Dockerfile](4.2.2/Dockerfile))
+- 4.2.1 ([4.2.1/Dockerfile](4.2.1/Dockerfile))
+- 4.2.0 ([4.2.0/Dockerfile](4.2.0/Dockerfile))
+- 4.1.12 ([4.1.12/Dockerfile](4.1.12/Dockerfile))
+- 4.1.11 ([4.1.11/Dockerfile](4.1.11/Dockerfile))
+- 4.1.10 ([4.1.10/Dockerfile](4.1.10/Dockerfile))
+- 4.1.9 ([4.1.9/Dockerfile](4.1.9/Dockerfile))
+- 4.1.8 ([4.1.8/Dockerfile](4.1.8/Dockerfile))
 
 ## Get the Docker image
 
@@ -36,14 +38,14 @@ docker pull mjstealey/irods-provider-postgres:latest
 ### Build image locally
 
 ```
-cd irods-provider-postgres/4.2.2
-docker build -t irods-provider-postgres .
+cd irods-provider-postgres/4.2.4
+docker build -t irods-provider-postgres:4.2.4 .
 ```
 
 ## Run the iRODS Provider
 
 ```
-docker run -d --name provider mjstealey/irods-provider-postgres:4.2.2
+docker run -d --name provider mjstealey/irods-provider-postgres:4.2.4
 ```
 
 - **Note**: This image is based from the [PostgreSQL Docker definition files](https://hub.docker.com/_/postgres/) which includes `EXPOSE 5432` (the postgres port), so standard container linking will make it automatically available to the linked containers. The default postgres user and database are created in the entrypoint with `initdb`.
@@ -113,11 +115,11 @@ parent context:
 
 The iRODS service has a multitude of configuration options available to it. The variables used during an installation of iRODS have been exposed to the user as settable environment variables and are honored at runtime.
 
-### `IRODS_SERVICE_ACCOUNT_NAME` 
+### `IRODS_SERVICE_ACCOUNT_NAME`
 
 Service account name - The account that will be in charge of running iRODS services. Default is `irods`.
 
-### `IRODS_SERVICE_ACCOUNT_GROUP` 
+### `IRODS_SERVICE_ACCOUNT_GROUP`
 
 Service account group - The group that will be in charge of running iRODS services. Default is `irods`.
 
@@ -129,23 +131,23 @@ Catalog service role - The role of the node being deploy where `1` denotes an iR
 
 ODBC driver - For PostgreSQL where `1` is **PostgreSQL ANSI** and `2` is **PostgreSQL Unicode**. Default is `2`.
 
-### `IRODS_DATABASE_SERVER_HOSTNAME` 
+### `IRODS_DATABASE_SERVER_HOSTNAME`
 
 Database server's hostname or IP - Location of where the PostgreSQL database is running. Default is `localhost`
 
-### `IRODS_DATABASE_SERVER_PORT` 
+### `IRODS_DATABASE_SERVER_PORT`
 
 Database server's port - Port which PostgreSQL is listening on. Default is `5432`
 
-### `IRODS_DATABASE_NAME` 
+### `IRODS_DATABASE_NAME`
 
 Database name - Name used to service the iRODS catalog. Default is `ICAT`
 
-### `IRODS_DATABASE_USER_NAME` 
+### `IRODS_DATABASE_USER_NAME`
 
 Database user - User that has owner rights on the iRODS catalog database in PostgreSQL. Default is `irods`
 
-### `IRODS_DATABASE_PASSWORD` 
+### `IRODS_DATABASE_PASSWORD`
 
 Database password - Password for the user that has owner rights on the iRODS catalog database in PostgreSQL. Default is `temppassword`
 
@@ -153,75 +155,75 @@ Database password - Password for the user that has owner rights on the iRODS cat
 
 Stored passwords salt - Random data that is used as an additional input to a one-way function that "hashes" data, a password or passphrase. Salts are closely related to the concept of nonce. Default is `tempsalt`
 
-### `IRODS_ZONE_NAME` 
+### `IRODS_ZONE_NAME`
 
 Zone name - Logical namespace defining the extent of all resources managed in the iRODS catalog. Default is `tempZone`
 
-### `IRODS_PORT` 
+### `IRODS_PORT`
 
 Zone port - Port over which iRODS services are communicated. Default is `1247`
 
-### `IRODS_PORT_RANGE_BEGIN` 
+### `IRODS_PORT_RANGE_BEGIN`
 
 Parallel port range (begin) - Beginning port of the range of ports used for parallel transfer. Default is `20000`
 
-### `IRODS_PORT_RANGE_END` 
+### `IRODS_PORT_RANGE_END`
 
 Parallel port range (end) - Ending port of the range of ports used for parallel transfer. Default is `20199`
 
-### `IRODS_CONTROL_PLANE_PORT` 
+### `IRODS_CONTROL_PLANE_PORT`
 
 Control plane port - Port over which iRODS grid control is communicated. Default is `1248`
 
-### `IRODS_SCHEMA_VALIDATION` 
+### `IRODS_SCHEMA_VALIDATION`
 
 Schema validation base URI - URI used to validate the iRODS schema on the server. Default is `file:///var/lib/irods/configuration_schemas`
 
-### `IRODS_SERVER_ADMINISTRATOR_USER_NAME` 
+### `IRODS_SERVER_ADMINISTRATOR_USER_NAME`
 
 iRODS administrator username - Initial adminstrative user created in the iRODS zone. Default is `rods`
 
-### `IRODS_SERVER_ZONE_KEY` 
+### `IRODS_SERVER_ZONE_KEY`
 
 Zone key - Unique string of characters used to ID a particular zone. Default is `TEMPORARY_zone_key`
 
-### `IRODS_SERVER_NEGOTIATION_KEY` 
+### `IRODS_SERVER_NEGOTIATION_KEY`
 
 Negotiation key - 32 byte string used for inter-server communication. Default is `TEMPORARY_32byte_negotiation_key`
 
-### `IRODS_CONTROL_PLANE_KEY` 
+### `IRODS_CONTROL_PLANE_KEY`
 
 Control plane key - 32 byte string used for inter-server communication. Default is `TEMPORARY__32byte_ctrl_plane_key`
 
-### `IRODS_SERVER_ADMINISTRATOR_PASSWORD` 
+### `IRODS_SERVER_ADMINISTRATOR_PASSWORD`
 
 iRODS administrator password - Password for the initial adminstrative user created in the iRODS zone. Default is `rods`
 
-### `IRODS_VAULT_DIRECTORY` 
+### `IRODS_VAULT_DIRECTORY`
 
 Vault directory - Physical location on disk associated with the creation of the initial unix filesystem resource named `demoResc`. Default is `/var/lib/irods/iRODS/Vault`
 
-### `UID_POSTGRES` 
+### `UID_POSTGRES`
 
 UID of the postgres service account - This can be set to any available system UID. Default is `999`
 
-### `GID_POSTGRES` 
+### `GID_POSTGRES`
 
 GID of the postgres service account - This can be set to any available system GID .Default is `999`
 
-### `UID_IRODS` 
+### `UID_IRODS`
 
 UID of the irods service account - This can be set to any available system UID. Default is `998`
 
-### `GID_IRODS` 
+### `GID_IRODS`
 
 GID of the irods service account - This can be set to any available system GID. Default is `998`
 
-### `POSTGRES_USER` 
+### `POSTGRES_USER`
 
 This optional environment variable is used in conjunction with `POSTGRES_PASSWORD` to set a user and its password. This variable will create the specified user with superuser power and a database with the same name. If it is not specified, then the default user of `postgres` will be used. Default is `postgres`
 
-### `POSTGRES_PASSWORD` 
+### `POSTGRES_PASSWORD`
 
 This environment variable is recommended for you to use the PostgreSQL image. This environment variable sets the superuser password for PostgreSQL. The default superuser is defined by the `POSTGRES_USER` environment variable. Default is `postgres`
 
@@ -297,7 +299,7 @@ It is also recommended to define a **hostname** for the container when persistin
       -v $(pwd)/var_pgdata:/var/lib/postgresql/data \
       mjstealey/irods-provider-postgres:latest
     ```
-	
+
 	Note, the host volumes now contain the relevant data to the iRODS deployment
 
     ```console
@@ -315,7 +317,7 @@ It is also recommended to define a **hostname** for the container when persistin
     drwxr-xr-x@ 18 xxxxx  xxxxx   576B May 12 13:06 packaging
     drwxr-xr-x@ 22 xxxxx  xxxxx   704B May 12 13:06 scripts
     drwxr-xr-x@  4 xxxxx  xxxxx   128B May 12 13:06 test
-    
+
     $ ls -lh etc_irods
     total 136
     -rw-r--r--@ 1 xxxxx  xxxxx   4.9K May 12 22:08 core.dvm
@@ -325,7 +327,7 @@ It is also recommended to define a **hostname** for the container when persistin
     -rw-r--r--@ 1 xxxxx  xxxxx    90B May 12 22:08 hosts_config.json
     -rw-------@ 1 xxxxx  xxxxx   3.4K May 12 22:08 server_config.json
     -rw-r--r--@ 1 xxxxx  xxxxx    64B May 12 22:07 service_account.config
-    
+
     $ ls -lh var_pgdata
     total 104
     -rw-------@  1 xxxxx  xxxxx     3B May 12 22:07 PG_VERSION
@@ -353,9 +355,9 @@ It is also recommended to define a **hostname** for the container when persistin
     -rw-------@  1 xxxxx  xxxxx    36B May 12 22:07 postmaster.opts
     -rw-------@  1 xxxxx  xxxxx    95B May 12 22:07 postmaster.pid
     ```
-	
+
 	Go ahead and `iput` some data and verify it in the catalog.
-	
+
     ```console
     $ docker exec -u irods provider iput VERSION.json
     $ docker exec -u irods provider ils -Lr
@@ -363,7 +365,7 @@ It is also recommended to define a **hostname** for the container when persistin
       rods              0 demoResc          224 2018-05-13.02:24 & VERSION.json
             generic    /var/lib/irods/iRODS/Vault/home/rods/VERSION.json
     ```
-	
+
 	**Note**: The physical file can be found at: `$(pwd)/var_irods/iRODS/Vault/home/rods/VERSION.json` of the host
 
 3. Stop and remove the provider container:
@@ -385,9 +387,9 @@ It is also recommended to define a **hostname** for the container when persistin
       mjstealey/irods-provider-postgres:latest
     ```
 	Even though the name of the docker container was changed, the shared host volume mounts and the defined hostname that the container should use remained the same.
-	
+
 	Verify that the file put from the previous container has persisted on the new container instance.
-	
+
     ```console
     $ docker exec -u irods new-provider ils -Lr
     /tempZone/home/rods:
@@ -406,7 +408,7 @@ In this example we will be using a VM on a private VLAN (not publicly accessible
 - UID/GID: `20022`/`10000`
 	- iRODS files to be owned by `20022`/`10000`
 	- PostgreSQL files to be owned by `999`/`10000`
-- Map 
+- Map
 	- host: `/var/provider/lib_irods` to docker - `/var/lib/irods`
 	- host: `/var/provider/etc_irods` to docker - `/etc/irods`
 	- host: `/var/provider/pg_data` to docker - `/var/lib/postgresql/data`
@@ -417,7 +419,7 @@ Create an environment file that captures the essence of what you want to deploy.
 
 Passwords generated using [pwgen](https://sourceforge.net/projects/pwgen/): `$ pwgen -cnB 32 1`
 
-Example: `irods-provider.env` 
+Example: `irods-provider.env`
 
 ```
 IRODS_SERVICE_ACCOUNT_NAME=irods
@@ -582,4 +584,3 @@ Output example for [iRODS provider v4.2.2](example-output/example-output-4.2.2.m
 - 4.1.10 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
 - 4.1.9 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
 - 4.1.8 - Debian:stretch based using [PostgreSQL 10](https://github.com/docker-library/postgres/blob/6fe8c15843400444e4ba6906ec6f94b0d526a678/10/Dockerfile) (14.04 Trusty iRODS ftp deb files)
-
